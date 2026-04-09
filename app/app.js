@@ -1,0 +1,85 @@
+const express = require("express");
+const path = require("path");
+
+const { siteConfig } = require("./config/site");
+const { buildHomePage } = require("./views/pages/home");
+const { buildUserPage } = require("./views/pages/user");
+const { findUserByUsername, getRelatedUsers } = require("./services/userService");
+const { getStoriesForUsername } = require("./services/storyService");
+const { buildSitemapXml } = require("./utils/seo");
+
+function createApp() {
+  const app = express();
+
+  app.disable("x-powered-by");
+  app.set("trust proxy", true);
+
+  app.use(express.urlencoded({ extended: false }));
+  app.use("/static", express.static(path.join(__dirname, "..", "public"), {
+    maxAge: "30d",
+    immutable: true
+  }));
+
+  app.get("/", (req, res) => {
+    res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
+    res.status(200).send(buildHomePage());
+  });
+
+  app.get("/result", (req, res) => {
+    const rawUsername = typeof req.query.username === "string" ? req.query.username : "";
+    const cleanedUsername = rawUsername.trim().replace(/^@+/, "").toLowerCase();
+
+    if (!cleanedUsername) {
+      return res.redirect(302, "/");
+    }
+
+    res.set("X-Robots-Tag", "noindex, nofollow");
+    return res.redirect(302, `/user/${encodeURIComponent(cleanedUsername)}`);
+  });
+
+  app.get("/user/:username", async (req, res) => {
+    const username = String(req.params.username || "").toLowerCase();
+    const user = findUserByUsername(username);
+
+    if (!user) {
+      return res.status(404).send(buildUserPage({
+        user: null,
+        stories: [],
+        relatedUsers: getRelatedUsers(siteConfig.featuredUsernames[0], 12)
+      }));
+    }
+
+    const stories = await getStoriesForUsername(username);
+    const relatedUsers = getRelatedUsers(username, 12);
+
+    res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
+    res.status(200).send(buildUserPage({
+      user,
+      stories,
+      relatedUsers
+    }));
+  });
+
+  app.get("/robots.txt", (req, res) => {
+    res.set("Cache-Control", "public, max-age=3600, s-maxage=86400");
+    res.type("text/plain").send(
+      [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /result",
+        `Sitemap: ${siteConfig.baseUrl}/sitemap.xml`
+      ].join("\n")
+    );
+  });
+
+  app.get("/sitemap.xml", (req, res) => {
+    res.set("Cache-Control", "public, max-age=3600, s-maxage=86400");
+    res.type("application/xml").send(buildSitemapXml());
+  });
+
+  return app;
+}
+
+module.exports = {
+  createApp
+};
