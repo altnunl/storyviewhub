@@ -13,6 +13,7 @@ function renderLayout({
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="monetag" content="b0e1f20a1296f16a3af2a1ec3f5e2941">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   ${buildMetaTags({ title, description, pathname, indexable })}
