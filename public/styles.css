@@ -536,4 +536,8 @@ body {
         margin-bottom: 0 !important;
         padding-bottom: 0 !important;
     }
+}.top-section,
+.hero,
+.container:first-child {
+    margin-top: -50px !important;
 }
