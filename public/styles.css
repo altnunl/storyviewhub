@@ -525,4 +525,15 @@ h1, .title {
 }/* FORCE UPDATE */
 body {
   outline: 0;
+}/* DESKTOP FIX */
+@media (min-width: 768px) {
+    main {
+        margin-top: -40px !important;
+        padding-top: 0 !important;
+    }
+
+    header {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
 }
