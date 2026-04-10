@@ -502,4 +502,24 @@ body {
   display: flex !important;
   opacity: 1 !important;
   transform: translate(-50%, 0);
+}/* ÜST BOŞLUĞU SIFIRLA */
+main {
+  margin-top: 0 !important;
+  padding-top: 20px !important;
+}
+
+/* HEADER ALT BOŞLUK AZALT */
+header {
+  margin-bottom: 10px !important;
+  padding-bottom: 0 !important;
+}
+
+/* STORY SAVER YAZISI ÜSTÜNÜ ÇEK */
+h1, .title {
+  margin-top: 10px !important;
+}
+
+/* ÜST BANNER İLE ARAYI DARALT */
+.top-banner {
+  margin-bottom: 10px !important;
 }
