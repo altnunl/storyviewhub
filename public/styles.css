@@ -526,9 +526,9 @@ h1, .title {
 body {
   outline: 0;
 }/* DESKTOP FIX */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     main {
-        margin-top: -40px !important;
+        margin-top: -80px !important;
         padding-top: 0 !important;
     }
 
