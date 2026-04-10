@@ -522,4 +522,7 @@ h1, .title {
 /* ÜST BANNER İLE ARAYI DARALT */
 .top-banner {
   margin-bottom: 10px !important;
+}/* FORCE UPDATE */
+body {
+  outline: 0;
 }
