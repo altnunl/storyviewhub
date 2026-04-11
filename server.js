@@ -1,3 +1,6 @@
+// 🔥 ENV OKUMA
+require("dotenv").config();
+
 const { createApp } = require("./app/app");
 const { siteConfig } = require("./app/config/site");
 

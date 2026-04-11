@@ -1,53 +1,57 @@
 const axios = require("axios");
 
-// 🔥 ANA FONKSİYON
-async function getStoriesForUsername(username) {
-  const apiStories = await tryFetchStoriesFromApi(username);
+// 🔥 ENV'den alıyoruz
+const APIFY_URL = process.env.APIFY_URL;
 
-  // ✅ sadece gerçek veri varsa döndür
-  if (apiStories && apiStories.length > 0) {
-    return apiStories;
-  }
-
-  // ❌ fake story üretme
-  return null;
-}
-
-
-// 🔥 RAPIDAPI ENTEGRASYON
-async function tryFetchStoriesFromApi(username) {
+async function getStories(username) {
   try {
-    const response = await axios.get(
-      "https://instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com/ig/story",
-      {
-        params: { username },
-        headers: {
-          "X-RapidAPI-Key": "BURAYA_API_KEY",
-          "X-RapidAPI-Host": "instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com"
-        },
-        timeout: 4000
-      }
-    );
+    const cleanUsername = String(username || "").replace("@", "").trim();
+    if (!cleanUsername) return [];
+
+    console.log("APIFY USERNAME:", cleanUsername);
+
+    const payload = {
+      usernames: [cleanUsername],
+    };
+
+    const response = await axios.post(APIFY_URL, payload, {
+      headers: { "Content-Type": "application/json" },
+      timeout: 180000,
+    });
 
     const data = response.data;
 
-    if (!data || !data.data || data.data.length === 0) {
-      return [];
-    }
+    console.log("RAW DATA:", data);
+    console.log(
+      "RAW DATA LENGTH:",
+      Array.isArray(data) ? data.length : "not array"
+    );
 
-    return data.data.slice(0, 12).map((item, index) => ({
-      id: `${username}-${index + 1}`,
-      type: item.type || "story",
-      timestamp: new Date().toISOString(),
-      thumbnail: item.thumbnail || item.video_url
-    }));
+    if (!Array.isArray(data)) return [];
 
-  } catch (error) {
-    console.log("API ERROR:", error.message);
+    return data
+      .map((item) => {
+        const url = item.link || "";
+
+        const type = String(item.mediaType || "")
+          .toLowerCase()
+          .includes("video")
+          ? "video"
+          : "image";
+
+        return {
+          url,
+          type,
+          thumbnail: item.thumbnail || "",
+        };
+      })
+      .filter((x) => x.url);
+
+  } catch (err) {
+    console.log("STORY API ERROR:", err.response?.data || err.message);
     return [];
   }
 }
 
-module.exports = {
-  getStoriesForUsername
-};
+// 🔥 BURASI ÇOK ÖNEMLİ (app.js ile uyumlu)
+module.exports = { getStoriesForUsername: getStories };

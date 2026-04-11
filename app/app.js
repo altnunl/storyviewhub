@@ -25,6 +25,31 @@ function createApp() {
     res.status(200).send(buildHomePage());
   });
 
+  // 🔥 STORY API
+  app.get("/api/story", async (req, res) => {
+    const username = req.query.username;
+
+    if (!username) {
+      return res.json({ stories: [] });
+    }
+
+    try {
+      const stories = await getStoriesForUsername(username);
+      res.json({ stories });
+    } catch (err) {
+      console.log("API ERROR:", err.message);
+      res.json({ stories: [] });
+    }
+  });
+
+  // 🔥 VISITOR COUNTER (EKLENDİ)
+  let visitorCount = 0;
+
+  app.get("/api/count", (req, res) => {
+    visitorCount++;
+    res.json({ count: visitorCount });
+  });
+
   app.get("/result", (req, res) => {
     const rawUsername = typeof req.query.username === "string" ? req.query.username : "";
     const cleanedUsername = rawUsername.trim().replace(/^@+/, "").toLowerCase();
