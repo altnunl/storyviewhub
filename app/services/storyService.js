@@ -1,12 +1,18 @@
 const axios = require("axios");
 
-// 🔥 ENV'den alıyoruz
-const APIFY_URL = process.env.APIFY_URL;
+// 🔥 ENV'den alıyoruz (güvenli fallback ile)
+const APIFY_URL = process.env.APIFY_URL || "";
 
 async function getStories(username) {
   try {
     const cleanUsername = String(username || "").replace("@", "").trim();
     if (!cleanUsername) return [];
+
+    // 🔥 ENV kontrol (CRASH ENGELLEME)
+    if (!APIFY_URL) {
+      console.log("❌ APIFY_URL missing in ENV");
+      return [];
+    }
 
     console.log("APIFY USERNAME:", cleanUsername);
 
@@ -14,12 +20,19 @@ async function getStories(username) {
       usernames: [cleanUsername],
     };
 
-    const response = await axios.post(APIFY_URL, payload, {
-      headers: { "Content-Type": "application/json" },
-      timeout: 180000,
-    });
+    let response;
 
-    const data = response.data;
+    try {
+      response = await axios.post(APIFY_URL, payload, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 180000,
+      });
+    } catch (err) {
+      console.log("❌ AXIOS ERROR:", err.response?.data || err.message);
+      return [];
+    }
+
+    const data = response?.data;
 
     console.log("RAW DATA:", data);
     console.log(
@@ -27,13 +40,24 @@ async function getStories(username) {
       Array.isArray(data) ? data.length : "not array"
     );
 
-    if (!Array.isArray(data)) return [];
+    // 🔥 BAZEN OBJECT DÖNEBİLİR → FIX
+    const items = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.items)
+      ? data.items
+      : [];
 
-    return data
+    if (!items.length) return [];
+
+    return items
       .map((item) => {
-        const url = item.link || "";
+        const url =
+          item.link ||
+          item.url ||
+          item.mediaUrl ||
+          "";
 
-        const type = String(item.mediaType || "")
+        const type = String(item.mediaType || item.type || "")
           .toLowerCase()
           .includes("video")
           ? "video"
@@ -48,10 +72,10 @@ async function getStories(username) {
       .filter((x) => x.url);
 
   } catch (err) {
-    console.log("STORY API ERROR:", err.response?.data || err.message);
+    console.log("🔥 FINAL ERROR:", err.message);
     return [];
   }
 }
 
-// 🔥 BURASI ÇOK ÖNEMLİ (app.js ile uyumlu)
+// 🔥 EXPORT (app.js ile uyumlu)
 module.exports = { getStoriesForUsername: getStories };
