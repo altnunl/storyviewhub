@@ -2,7 +2,7 @@ const { renderLayout } = require("../layout");
 const { siteConfig } = require("../../config/site");
 const { escapeHtml } = require("../../utils/html");
 
-// UNIQUE TEXT
+// 🔥 UNIQUE TEXT GENERATOR
 function generateUniqueText(username) {
   const name = username.charAt(0).toUpperCase() + username.slice(1);
 
@@ -166,8 +166,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
                 onkeypress="if(event.key==='Enter'){goToUser()}"
               />
 
-              <button 
-                onclick="goToUser()"
+              <button onclick="goToUser()"
                 style="
                   padding:12px 16px;
                   border:none;
@@ -176,8 +175,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
                   border-radius:10px;
                   font-weight:600;
                   cursor:pointer;
-                "
-              >
+                ">
                 View Stories
               </button>
 
@@ -194,7 +192,9 @@ function buildUserPage({ user, stories, relatedUsers }) {
           <span>Top ad</span>
         </div>
 
-        ${storySection}
+        <div id="storyContainer">
+          ${storySection}
+        </div>
 
         <div style="text-align:center; margin:20px 0; font-size:13px; color:#888;">
           🔥 ${randomUsers}+ users boosted profiles today
@@ -233,49 +233,74 @@ function buildUserPage({ user, stories, relatedUsers }) {
           </a>
         </div>
 
-        <div style="margin-top:40px; font-size:14px; color:#666; line-height:1.6;">
-          <h2 style="font-size:18px; margin-bottom:10px;">
-            About ${escapeHtml(user.displayName)} Instagram Stories
-          </h2>
-
-          <p>
-            ${escapeHtml(user.displayName)} is an active Instagram profile known for sharing engaging and dynamic content.
-          </p>
-        </div>
-
-        <div style="margin-top:30px; font-size:14px; color:#666;">
-          People also searched for:
-        </div>
-
-        <div class="link-list">
-          ${relatedUsers.slice(0,8).map(u => `<a href="/user/${u.slug}">@${u.slug}</a>`).join("")}
-        </div>
-
       </div>
     </section>
 
-    <script>
-      function goToUser() {
-        const input = document.getElementById("usernameInput");
-        if (!input) return;
+<script>
 
-        let username = input.value.trim();
-        if (!username) return;
+async function loadStories(username) {
 
-        username = username.replace(/^@+/, "").toLowerCase();
-        window.location.href = "/user/" + encodeURIComponent(username);
-      }
+  const container = document.getElementById("storyContainer");
 
-      const unlockBtn = document.getElementById("unlockBtn");
-      if (unlockBtn) {
-        unlockBtn.onclick = () => {
-          document.querySelectorAll(".story-media").forEach(el => {
-            el.style.filter = "blur(0)";
-          });
-          unlockBtn.remove();
-        };
-      }
-    </script>
+  container.innerHTML = \`
+    <div style="padding:40px;text-align:center;">
+      <div style="
+        width:40px;
+        height:40px;
+        border:4px solid #eee;
+        border-top:4px solid #e25b34;
+        border-radius:50%;
+        animation:spin 1s linear infinite;
+        margin:auto;
+      "></div>
+      <p style="margin-top:10px;">Loading stories...</p>
+    </div>
+  \`;
+
+  try {
+    const res = await fetch("/api/story?username=" + username);
+    const data = await res.json();
+
+    if (!data.stories || data.stories.length === 0) {
+      container.innerHTML = "${dynamicText}";
+      return;
+    }
+
+    container.innerHTML = \`
+      <div style="text-align:center; margin-bottom:20px;">
+        <button id="unlockBtn">Unlock Stories</button>
+      </div>
+
+      <div class="story-grid">
+        \${data.stories.map(story => \`
+          <article class="story-card">
+            <img src="\${story.thumbnail}" class="story-media" style="filter:blur(20px)">
+            <a href="\${story.url}" target="_blank">Download</a>
+          </article>
+        \`).join("")}
+      </div>
+    \`;
+
+    document.getElementById("unlockBtn").onclick = () => {
+      document.querySelectorAll(".story-media").forEach(el => el.style.filter="blur(0)");
+    };
+
+  } catch {
+    container.innerHTML = "Error loading stories.";
+  }
+}
+
+function goToUser() {
+  const input = document.getElementById("usernameInput");
+  let username = input.value.trim();
+
+  if (!username) return;
+
+  username = username.replace(/^@+/, "").toLowerCase();
+  loadStories(username);
+}
+
+</script>
   `;
 
   return renderLayout({
