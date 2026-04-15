@@ -2,6 +2,21 @@ const { renderLayout } = require("../layout");
 const { siteConfig } = require("../../config/site");
 const { escapeHtml } = require("../../utils/html");
 
+// 🔥 UNIQUE TEXT GENERATOR
+function generateUniqueText(username) {
+  const name = username.charAt(0).toUpperCase() + username.slice(1);
+
+  const variations = [
+    `${name} currently has no active Instagram stories. We check frequently and update this page as soon as new stories are available.`,
+    `There are no active stories from ${name} right now. Our system automatically monitors updates and will display them here instantly.`,
+    `${name} has not shared any stories at the moment. Please check back later as we continuously update story data.`,
+    `No stories available for ${name}. We are actively checking Instagram for new uploads and will update this page shortly.`,
+    `At the moment, ${name} does not have any active Instagram stories. New content will appear here automatically once available.`
+  ];
+
+  return variations[Math.floor(Math.random() * variations.length)];
+}
+
 function buildUserPage({ user, stories, relatedUsers }) {
 
   if (!user) {
@@ -30,18 +45,25 @@ function buildUserPage({ user, stories, relatedUsers }) {
   const title = `${user.displayName} Instagram Stories Download`;
   const description = `Watch ${user.displayName} Instagram stories instantly.`;
 
+  const dynamicText = generateUniqueText(user.slug);
+
   // 🔥 RANDOM FOMO
   const randomUsers = Math.floor(Math.random() * 4000) + 1200;
 
-  // 🔥 STORY KONTROL (EN KRİTİK)
+  // 🔥 STORY KONTROL
   let storySection = "";
 
   if (!stories || stories.length === 0) {
     storySection = `
       <div style="text-align:center; padding:40px 0;">
         <h3 style="margin-bottom:10px;">No active stories</h3>
-        <p style="color:#777; font-size:14px;">
-          This user currently has no active Instagram stories.
+
+        <p style="color:#777; font-size:14px; max-width:500px; margin:0 auto;">
+          ${dynamicText}
+        </p>
+
+        <p style="margin-top:10px; font-size:13px; color:#aaa;">
+          Last checked a few moments ago
         </p>
 
         <div style="margin-top:20px;">
@@ -87,6 +109,11 @@ function buildUserPage({ user, stories, relatedUsers }) {
         <div class="page-intro">
           <h1>${escapeHtml(user.displayName)} Stories</h1>
           <p>@${escapeHtml(user.slug)} story viewer</p>
+
+          <p style="margin-top:10px; color:#666; font-size:14px; max-width:500px;">
+            Watch ${escapeHtml(user.displayName)} Instagram stories anonymously.
+            No login required. Fast and updated regularly.
+          </p>
         </div>
 
         <!-- 🔥 TOP AD -->
@@ -138,7 +165,23 @@ function buildUserPage({ user, stories, relatedUsers }) {
           </a>
         </div>
 
-        <!-- SEO -->
+        <!-- 🔥 SEO TEXT BLOCK -->
+        <div style="margin-top:40px; font-size:14px; color:#666; line-height:1.6;">
+          <h2 style="font-size:18px; margin-bottom:10px;">
+            About ${escapeHtml(user.displayName)} Instagram Stories
+          </h2>
+
+          <p>
+            ${escapeHtml(user.displayName)} is an active Instagram profile known for sharing engaging and dynamic content.
+            You can use this page to view their latest Instagram stories anonymously without logging in.
+          </p>
+
+          <p style="margin-top:10px;">
+            Our system continuously monitors ${escapeHtml(user.displayName)} and updates this page automatically whenever new stories are published.
+          </p>
+        </div>
+
+        <!-- RELATED -->
         <div style="margin-top:30px; font-size:14px; color:#666;">
           People also searched for:
         </div>
