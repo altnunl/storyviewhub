@@ -47,10 +47,8 @@ function buildUserPage({ user, stories, relatedUsers }) {
 
   const dynamicText = generateUniqueText(user.slug);
 
-  // 🔥 RANDOM FOMO
   const randomUsers = Math.floor(Math.random() * 4000) + 1200;
 
-  // 🔥 STORY KONTROL
   let storySection = "";
 
   if (!stories || stories.length === 0) {
@@ -98,10 +96,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
     `;
   }
 
-  const internalLinks = relatedUsers.map(u => {
-    return `<a href="/user/${u.slug}" class="related-link">@${u.slug}</a>`;
-  }).join("");
-
   const body = `
     <section class="page-section">
       <div class="shell">
@@ -114,27 +108,68 @@ function buildUserPage({ user, stories, relatedUsers }) {
             Watch ${escapeHtml(user.displayName)} Instagram stories anonymously.
             No login required. Fast and updated regularly.
           </p>
+
+          <!-- 🔥 MINI SEARCH (EKLENDİ) -->
+          <div style="margin-top:20px;">
+            <form action="/result" method="GET" style="
+              display:flex;
+              justify-content:center;
+              gap:10px;
+              flex-wrap:wrap;
+            ">
+              
+              <input 
+                type="text" 
+                name="username"
+                placeholder="Enter another username..."
+                required
+                style="
+                  padding:12px 14px;
+                  border-radius:10px;
+                  border:1px solid #ddd;
+                  min-width:220px;
+                  font-size:14px;
+                "
+              />
+
+              <button 
+                type="submit"
+                style="
+                  padding:12px 16px;
+                  border:none;
+                  background:#e25b34;
+                  color:#fff;
+                  border-radius:10px;
+                  font-weight:600;
+                  cursor:pointer;
+                "
+              >
+                View Stories
+              </button>
+
+            </form>
+
+            <div style="margin-top:8px; font-size:12px; color:#888;">
+              Try: cristiano, messi, nike
+            </div>
+          </div>
+
         </div>
 
-        <!-- 🔥 TOP AD -->
         <div class="ad-slot ad-slot-wide">
           <span>Top ad</span>
         </div>
 
-        <!-- 📸 STORY -->
         ${storySection}
 
-        <!-- 🔥 DYNAMIC FOMO -->
         <div style="text-align:center; margin:20px 0; font-size:13px; color:#888;">
           🔥 ${randomUsers}+ users boosted profiles today
         </div>
 
-        <!-- 💰 MID AD -->
         <div class="ad-slot ad-slot-wide">
           <span>Mid ad</span>
         </div>
 
-        <!-- 🚀 MAIN CTA -->
         <section style="text-align:center; margin-top:30px;">
           <a href="${siteConfig.smmUrl}" target="_blank"
             style="
@@ -157,7 +192,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
           </div>
         </section>
 
-        <!-- SOFT CTA -->
         <div style="text-align:center; margin-top:15px;">
           <a href="${siteConfig.smmUrl}" target="_blank"
             style="font-size:13px; color:#555; text-decoration:underline;">
@@ -165,7 +199,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
           </a>
         </div>
 
-        <!-- 🔥 SEO TEXT BLOCK -->
         <div style="margin-top:40px; font-size:14px; color:#666; line-height:1.6;">
           <h2 style="font-size:18px; margin-bottom:10px;">
             About ${escapeHtml(user.displayName)} Instagram Stories
@@ -181,7 +214,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
           </p>
         </div>
 
-        <!-- RELATED -->
         <div style="margin-top:30px; font-size:14px; color:#666;">
           People also searched for:
         </div>
