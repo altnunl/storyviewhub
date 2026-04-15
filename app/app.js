@@ -25,7 +25,6 @@ function createApp() {
     res.status(200).send(buildHomePage());
   });
 
-  // 🔥 STORY API
   app.get("/api/story", async (req, res) => {
     const username = req.query.username;
 
@@ -42,7 +41,6 @@ function createApp() {
     }
   });
 
-  // 🔥 VISITOR COUNTER (EKLENDİ)
   let visitorCount = 0;
 
   app.get("/api/count", (req, res) => {
@@ -63,19 +61,36 @@ function createApp() {
   });
 
   app.get("/user/:username", async (req, res) => {
-    const username = String(req.params.username || "").toLowerCase();
-    const user = findUserByUsername(username);
+    const username = String(req.params.username || "").trim().replace(/^@+/, "").toLowerCase();
 
-    if (!user) {
-      return res.status(404).send(buildUserPage({
-        user: null,
-        stories: [],
-        relatedUsers: getRelatedUsers(siteConfig.featuredUsernames[0], 12)
-      }));
+    if (!username) {
+      return res.redirect(302, "/");
     }
 
-    const stories = await getStoriesForUsername(username);
-    const relatedUsers = getRelatedUsers(username, 12);
+    // Kayıtlı kullanıcı varsa onu kullan
+    let user = findUserByUsername(username);
+
+    // Kayıtlı değilse dinamik kullanıcı oluştur
+    if (!user) {
+      user = {
+        slug: username,
+        displayName: username
+          .split(/[._-]/g)
+          .filter(Boolean)
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" ") || username
+      };
+    }
+
+    let stories = [];
+    try {
+      stories = await getStoriesForUsername(username);
+    } catch (err) {
+      console.log("USER PAGE STORY ERROR:", err.message);
+      stories = [];
+    }
+
+    const relatedUsers = getRelatedUsers(siteConfig.featuredUsernames[0], 12);
 
     res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
     res.status(200).send(buildUserPage({
