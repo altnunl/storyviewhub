@@ -46,7 +46,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
   const description = `Watch ${user.displayName} Instagram stories instantly.`;
 
   const dynamicText = generateUniqueText(user.slug);
-
   const randomUsers = Math.floor(Math.random() * 4000) + 1200;
 
   let storySection = "";
@@ -109,20 +108,14 @@ function buildUserPage({ user, stories, relatedUsers }) {
             No login required. Fast and updated regularly.
           </p>
 
-          <!-- 🔥 MINI SEARCH (EKLENDİ) -->
+          <!-- 🔥 FINAL SEARCH (EN STABİL HAL) -->
           <div style="margin-top:20px;">
-            <form action="/result" method="GET" style="
-              display:flex;
-              justify-content:center;
-              gap:10px;
-              flex-wrap:wrap;
-            ">
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
               
               <input 
+                id="usernameInput"
                 type="text" 
-                name="username"
                 placeholder="Enter another username..."
-                required
                 style="
                   padding:12px 14px;
                   border-radius:10px;
@@ -130,10 +123,11 @@ function buildUserPage({ user, stories, relatedUsers }) {
                   min-width:220px;
                   font-size:14px;
                 "
+                onkeypress="if(event.key==='Enter'){goToUser()}"
               />
 
               <button 
-                type="submit"
+                onclick="goToUser()"
                 style="
                   padding:12px 16px;
                   border:none;
@@ -147,7 +141,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
                 View Stories
               </button>
 
-            </form>
+            </div>
 
             <div style="margin-top:8px; font-size:12px; color:#888;">
               Try: cristiano, messi, nike
@@ -224,6 +218,19 @@ function buildUserPage({ user, stories, relatedUsers }) {
 
       </div>
     </section>
+
+    <script>
+      function goToUser() {
+        const input = document.getElementById("usernameInput");
+        if (!input) return;
+
+        let username = input.value.trim();
+        if (!username) return;
+
+        username = username.replace(/^@+/, "").toLowerCase();
+        window.location.href = "/user/" + encodeURIComponent(username);
+      }
+    </script>
   `;
 
   return renderLayout({
