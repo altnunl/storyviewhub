@@ -6,7 +6,7 @@ function buildHomePage() {
       <div class="shell shell-narrow">
 
         <div class="ad-slot" style="margin-bottom:20px;">
-          <span>Top banner ad</span>
+          <script src="//YOUR_MONETAG_BANNER.js"></script>
         </div>
 
         <div class="hero-card">
@@ -31,7 +31,7 @@ function buildHomePage() {
           </div>
 
           <div class="ad-slot" style="margin-top:20px;">
-            <span>Main ad (high CTR)</span>
+            <script src="//YOUR_MONETAG_BANNER.js"></script>
           </div>
 
           <div style="margin-top:25px;">
@@ -45,7 +45,7 @@ function buildHomePage() {
           <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
 
           <div class="ad-slot" style="margin-top:25px;">
-            <span>Bottom ad</span>
+            <script src="//YOUR_MONETAG_BANNER.js"></script>
           </div>
 
         </div>
@@ -208,13 +208,20 @@ function buildHomePage() {
             unlockBtn.style.fontWeight = "600";
 
             unlockBtn.onclick = () => {
-              document.querySelectorAll(".story-media").forEach(el => {
-                el.style.filter = "blur(0px)";
-                el.style.transform = "scale(1)";
-                el.style.opacity = "1";
-              });
-              unlockBtn.remove();
-            };
+
+  // 🔥 MONETAG REKLAM (SADECE 1 KEZ)
+  if (typeof show_123456 === "function") {
+    show_123456();
+  }
+
+  document.querySelectorAll(".story-media").forEach(el => {
+    el.style.filter = "blur(0px)";
+    el.style.transform = "scale(1)";
+    el.style.opacity = "1";
+  });
+
+  unlockBtn.remove();
+};
 
             resultDiv.appendChild(unlockBtn);
 

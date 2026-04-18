@@ -189,7 +189,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
         </div>
 
         <div class="ad-slot ad-slot-wide">
-          <span>Top ad</span>
+          <script src="//YOUR_MONETAG_BANNER.js"></script>
         </div>
 
         <div id="storyContainer">
@@ -201,7 +201,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
         </div>
 
         <div class="ad-slot ad-slot-wide">
-          <span>Mid ad</span>
+          <script src="//YOUR_MONETAG_BANNER.js"></script>
         </div>
 
         <section style="text-align:center; margin-top:30px;">
@@ -282,8 +282,14 @@ async function loadStories(username) {
     \`;
 
     document.getElementById("unlockBtn").onclick = () => {
-      document.querySelectorAll(".story-media").forEach(el => el.style.filter="blur(0)");
-    };
+
+  // 🔥 MONETAG REKLAM
+  if (typeof show_123456 === "function") {
+    show_123456();
+  }
+
+  document.querySelectorAll(".story-media").forEach(el => el.style.filter="blur(0)");
+};
 
   } catch {
     container.innerHTML = "Error loading stories.";

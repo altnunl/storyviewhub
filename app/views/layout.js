@@ -16,9 +16,14 @@ function renderLayout({
   <meta name="monetag" content="b0e1f20a1296f16a3af2a1ec3f5e2941">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- 🔥 MONETAG GLOBAL SCRIPT (EKLENDİ) -->
+  <script src="//YOUR_MONETAG_SCRIPT.js"></script>
+
   ${buildMetaTags({ title, description, pathname, indexable })}
   <link rel="preload" href="/static/styles.css" as="style">
   <link rel="stylesheet" href="/static/styles.css?v=2">
+
   <!-- 🔥 FIX: ANIMATION TRANSFORM ÇAKIŞMA -->
   <style>
     @keyframes pulseGlow {
@@ -90,27 +95,23 @@ ${extraBody}
     const sticky = document.querySelector('.sticky-cta');
     const promo = document.querySelector('#promoBar');
 
-    // 🔥 önce promo hemen gelsin
     if (promo) {
       promo.style.display = 'flex';
     }
 
-    // 🔥 sticky gecikmeli gelsin (2 saniye sonra)
     if (sticky) {
       setTimeout(() => {
         sticky.style.display = 'flex';
 
-        // smooth görünmesi için küçük delay
         setTimeout(() => {
           sticky.classList.add("show");
         }, 50);
 
-      }, 2000); // 👉 burayı istersen 1500 / 3000 yapabilirsin
+      }, 2000);
     }
   }
 }
 
-  // scroll
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     const height = document.body.scrollHeight - window.innerHeight;
@@ -121,13 +122,11 @@ ${extraBody}
     }
   });
 
-  // delay
   setTimeout(() => {
     hasWaitedEnough = true;
     tryShowElements();
   }, 3000);
 
-  // ❗ EXIT INTENT
   document.addEventListener("mouseleave", function(e) {
     if (e.clientY < 10 && !exitTriggered) {
       exitTriggered = true;
