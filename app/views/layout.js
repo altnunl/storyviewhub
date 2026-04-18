@@ -20,10 +20,7 @@ function renderLayout({
   <link rel="icon" href="/favicon.ico">
   <!-- 🔥 MONETAG POPUNDER SCRIPT (DOĞRU) -->
   <script>
-  (function(s){
-    s.dataset.zone='10893744',
-    s.src='https://al5sm.com/tag.min.js'
-  })
+  
   ([document.documentElement, document.body]
   .filter(Boolean)
   .pop()

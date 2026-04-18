@@ -283,12 +283,23 @@ async function loadStories(username) {
 
     document.getElementById("unlockBtn").onclick = () => {
 
-  // 🔥 MONETAG REKLAM
-  if (typeof show_123456 === "function") {
-    show_123456();
+  // 🔥 SADECE 1 KEZ ÇALIŞSIN (ANTI BAN)
+  if (!window.adShown) {
+    window.adShown = true;
+
+    (function(s){
+      s.dataset.zone='10893744',
+      s.src='https://al5sm.com/tag.min.js'
+    })
+    ([document.documentElement, document.body]
+    .filter(Boolean)
+    .pop()
+    .appendChild(document.createElement('script')));
   }
 
-  document.querySelectorAll(".story-media").forEach(el => el.style.filter="blur(0)");
+  // 🔥 STORY AÇ
+  document.querySelectorAll(".story-media")
+    .forEach(el => el.style.filter = "blur(0)");
 };
 
   } catch {
