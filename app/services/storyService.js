@@ -1,17 +1,26 @@
 const axios = require("axios");
 
-// 🔥 ENV'den alıyoruz (güvenli fallback ile)
 const APIFY_URL = process.env.APIFY_URL || "";
+
+// 🔥 CACHE (EN KRİTİK)
+const requestCache = {};
+const CACHE_TIME = 60 * 1000; // 60 saniye
 
 async function getStories(username) {
   try {
     const cleanUsername = String(username || "").replace("@", "").trim();
     if (!cleanUsername) return [];
 
-    // 🔥 ENV kontrol (CRASH ENGELLEME)
     if (!APIFY_URL) {
       console.log("❌ APIFY_URL missing in ENV");
       return [];
+    }
+
+    const now = Date.now();
+
+    // 🔥 CACHE CHECK
+    if (requestCache[cleanUsername] && (now - requestCache[cleanUsername].time < CACHE_TIME)) {
+      return requestCache[cleanUsername].data;
     }
 
     console.log("APIFY USERNAME:", cleanUsername);
@@ -40,16 +49,18 @@ async function getStories(username) {
       Array.isArray(data) ? data.length : "not array"
     );
 
-    // 🔥 BAZEN OBJECT DÖNEBİLİR → FIX
     const items = Array.isArray(data)
       ? data
       : Array.isArray(data?.items)
       ? data.items
       : [];
 
-    if (!items.length) return [];
+    if (!items.length) {
+      requestCache[cleanUsername] = { data: [], time: now };
+      return [];
+    }
 
-    return items
+    const result = items
       .map((item) => {
         const url =
           item.link ||
@@ -71,11 +82,18 @@ async function getStories(username) {
       })
       .filter((x) => x.url);
 
+    // 🔥 CACHE SAVE
+    requestCache[cleanUsername] = {
+      data: result,
+      time: now
+    };
+
+    return result;
+
   } catch (err) {
     console.log("🔥 FINAL ERROR:", err.message);
     return [];
   }
 }
 
-// 🔥 EXPORT (app.js ile uyumlu)
 module.exports = { getStoriesForUsername: getStories };

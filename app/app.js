@@ -20,6 +20,33 @@ function createApp() {
     immutable: true
   }));
 
+  // 🔥 CACHE (EN KRİTİK FIX)
+  const storyCache = {};
+  const CACHE_DURATION = 60 * 1000; // 60 saniye
+
+  async function getStoriesSafe(username) {
+    const now = Date.now();
+
+    if (storyCache[username] && (now - storyCache[username].time < CACHE_DURATION)) {
+      return storyCache[username].data;
+    }
+
+    const data = await getStoriesForUsername(username);
+
+    storyCache[username] = {
+      data,
+      time: now
+    };
+
+    return data;
+  }
+
+  // 🔥 BOT FILTER (para yakmayı keser)
+  function isBot(req) {
+    const ua = req.headers["user-agent"] || "";
+    return /bot|crawl|spider|slurp|facebookexternalhit|wget|curl/i.test(ua);
+  }
+
   app.get("/", (req, res) => {
     res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
     res.status(200).send(buildHomePage());
@@ -32,8 +59,13 @@ function createApp() {
       return res.json({ stories: [] });
     }
 
+    // 🔥 BOT ENGEL
+    if (isBot(req)) {
+      return res.json({ stories: [] });
+    }
+
     try {
-      const stories = await getStoriesForUsername(username);
+      const stories = await getStoriesSafe(username);
       res.json({ stories });
     } catch (err) {
       console.log("API ERROR:", err.message);
@@ -67,10 +99,8 @@ function createApp() {
       return res.redirect(302, "/");
     }
 
-    // Kayıtlı kullanıcı varsa onu kullan
     let user = findUserByUsername(username);
 
-    // Kayıtlı değilse dinamik kullanıcı oluştur
     if (!user) {
       user = {
         slug: username,
@@ -83,8 +113,12 @@ function createApp() {
     }
 
     let stories = [];
+
     try {
-      stories = await getStoriesForUsername(username);
+      // 🔥 BOT ENGEL
+      if (!isBot(req)) {
+        stories = await getStoriesSafe(username);
+      }
     } catch (err) {
       console.log("USER PAGE STORY ERROR:", err.message);
       stories = [];
