@@ -17,8 +17,17 @@ function renderLayout({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- 🔥 MONETAG GLOBAL SCRIPT (EKLENDİ) -->
-  <script src="//YOUR_MONETAG_SCRIPT.js"></script>
+  <!-- 🔥 MONETAG POPUNDER SCRIPT (DOĞRU) -->
+  <script>
+  (function(s){
+    s.dataset.zone='10893744',
+    s.src='https://al5sm.com/tag.min.js'
+  })
+  ([document.documentElement, document.body]
+  .filter(Boolean)
+  .pop()
+  .appendChild(document.createElement('script')))
+  </script>
 
   ${buildMetaTags({ title, description, pathname, indexable })}
   <link rel="preload" href="/static/styles.css" as="style">
@@ -87,30 +96,30 @@ ${extraBody}
   }
 
   function tryShowElements() {
-  if (shown) return;
+    if (shown) return;
 
-  if (hasScrolledEnough && hasWaitedEnough) {
-    shown = true;
+    if (hasScrolledEnough && hasWaitedEnough) {
+      shown = true;
 
-    const sticky = document.querySelector('.sticky-cta');
-    const promo = document.querySelector('#promoBar');
+      const sticky = document.querySelector('.sticky-cta');
+      const promo = document.querySelector('#promoBar');
 
-    if (promo) {
-      promo.style.display = 'flex';
-    }
+      if (promo) {
+        promo.style.display = 'flex';
+      }
 
-    if (sticky) {
-      setTimeout(() => {
-        sticky.style.display = 'flex';
-
+      if (sticky) {
         setTimeout(() => {
-          sticky.classList.add("show");
-        }, 50);
+          sticky.style.display = 'flex';
 
-      }, 2000);
+          setTimeout(() => {
+            sticky.classList.add("show");
+          }, 50);
+
+        }, 2000);
+      }
     }
   }
-}
 
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
