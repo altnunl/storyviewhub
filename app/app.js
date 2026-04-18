@@ -112,12 +112,14 @@ function createApp() {
       };
     }
 
+    // 🔥 CRITICAL FIX: SAYFA RENDER'DA APIFY YOK
     let stories = [];
 
     try {
-      // 🔥 BOT ENGEL
+      // 🔥 EKSTRA GÜVENLİK: sadece gerçek kullanıcı ise bile burada çağırma
+      // (artık tüm veri sadece /api/story üzerinden gelecek)
       if (!isBot(req)) {
-        stories = await getStoriesSafe(username);
+        // stories = await getStoriesSafe(username); ❌ KAPATILDI
       }
     } catch (err) {
       console.log("USER PAGE STORY ERROR:", err.message);
