@@ -236,10 +236,10 @@ function buildHomePage() {
 
             unlockBtn.onclick = () => {
 
-  // 🔥 SADECE 1 KEZ ÇALIŞSIN
   if (!window.adShown) {
     window.adShown = true;
 
+    // 🔥 SCRIPT YÜKLE
     (function(s){
       s.dataset.zone='10893744',
       s.src='https://al5sm.com/tag.min.js'
@@ -248,9 +248,14 @@ function buildHomePage() {
     .filter(Boolean)
     .pop()
     .appendChild(document.createElement('script')));
+
+    // 🔥 AYNI CLICK'TE TETİKLE
+    setTimeout(() => {
+      document.body.click();
+    }, 150);
   }
 
-  // 🔥 STORY AÇ
+  // STORY AÇ
   document.querySelectorAll(".story-media").forEach(el => {
     el.style.filter = "blur(0px)";
     el.style.transform = "scale(1)";
