@@ -5,9 +5,18 @@ function buildHomePage() {
     <section class="hero">
       <div class="shell shell-narrow">
 
-        <div class="ad-slot" style="margin-bottom:20px;">
-          <script src="//YOUR_MONETAG_BANNER.js"></script>
-        </div>
+        <div class="ad-slot">
+  <script>
+  (function(s){
+    s.dataset.zone='10893846',
+    s.src='https://nap5k.com/tag.min.js'
+  })
+  ([document.documentElement, document.body]
+  .filter(Boolean)
+  .pop()
+  .appendChild(document.createElement('script')))
+  </script>
+</div>
 
         <div class="hero-card">
 
@@ -30,9 +39,18 @@ function buildHomePage() {
             Loading users...
           </div>
 
-          <div class="ad-slot" style="margin-top:20px;">
-            <script src="//YOUR_MONETAG_BANNER.js"></script>
-          </div>
+          <div class="ad-slot">
+  <script>
+  (function(s){
+    s.dataset.zone='10893846',
+    s.src='https://nap5k.com/tag.min.js'
+  })
+  ([document.documentElement, document.body]
+  .filter(Boolean)
+  .pop()
+  .appendChild(document.createElement('script')))
+  </script>
+</div>
 
           <div style="margin-top:25px;">
             <p style="font-size:14px;color:#777;">Want more reach?</p>
@@ -44,9 +62,18 @@ function buildHomePage() {
 
           <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
 
-          <div class="ad-slot" style="margin-top:25px;">
-            <script src="//YOUR_MONETAG_BANNER.js"></script>
-          </div>
+          <div class="ad-slot">
+  <script>
+  (function(s){
+    s.dataset.zone='10893846',
+    s.src='https://nap5k.com/tag.min.js'
+  })
+  ([document.documentElement, document.body]
+  .filter(Boolean)
+  .pop()
+  .appendChild(document.createElement('script')))
+  </script>
+</div>
 
         </div>
       </div>
