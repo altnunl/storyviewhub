@@ -236,25 +236,16 @@ function buildHomePage() {
 
             unlockBtn.onclick = () => {
 
-  const unlockBtn = document.createElement("button");
+  // 🔥 DIRECT LINK
+  window.open("https://omg10.com/4/10896143", "_blank");
 
-// stil vs...
-
-unlockBtn.onclick = () => {
-
-  // 🔥 SENİN YENİ KOD BURAYA
-  const newTab = window.open("https://omg10.com/4/10896143", "_blank");
-
-  if (!newTab) {
-    window.location.href = "https://omg10.com/4/10896143";
-  }
-
+  // 🔥 POPUNDER
   if (!window.adShown) {
     window.adShown = true;
 
     (function(s){
-      s.dataset.zone='10893744',
-      s.src='https://al5sm.com/tag.min.js'
+      s.dataset.zone = '10893744';
+      s.src = 'https://al5sm.com/tag.min.js';
     })
     ([document.documentElement, document.body]
     .filter(Boolean)
@@ -262,6 +253,7 @@ unlockBtn.onclick = () => {
     .appendChild(document.createElement('script')));
   }
 
+  // 🔥 UNLOCK
   document.querySelectorAll(".story-media").forEach(el => {
     el.style.filter = "blur(0px)";
     el.style.transform = "scale(1)";

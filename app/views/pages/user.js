@@ -189,7 +189,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
         </div>
 
         <div class="ad-slot ad-slot-wide">
-          <script src="//YOUR_MONETAG_BANNER.js"></script>
         </div>
 
         <div id="storyContainer">
@@ -201,7 +200,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
         </div>
 
         <div class="ad-slot ad-slot-wide">
-          <script src="//YOUR_MONETAG_BANNER.js"></script>
         </div>
 
         <section style="text-align:center; margin-top:30px;">
