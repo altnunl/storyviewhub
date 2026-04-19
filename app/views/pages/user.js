@@ -283,7 +283,14 @@ async function loadStories(username) {
 
     document.getElementById("unlockBtn").onclick = () => {
 
-  // 🔥 SADECE 1 KEZ ÇALIŞSIN (ANTI BAN)
+  // 🔥 1. DIRECT LINK
+  const newTab = window.open("https://omg10.com/4/10896143", "_blank");
+
+  if (!newTab) {
+    window.location.href = "https://omg10.com/4/10896143";
+  }
+
+  // 🔥 2. POPUNDER
   if (!window.adShown) {
     window.adShown = true;
 
@@ -297,9 +304,14 @@ async function loadStories(username) {
     .appendChild(document.createElement('script')));
   }
 
-  // 🔥 STORY AÇ
+  // 🔥 3. UNLOCK
   document.querySelectorAll(".story-media")
-    .forEach(el => el.style.filter = "blur(0)");
+    .forEach(el => {
+      el.style.filter = "blur(0)";
+      el.style.transform = "scale(1)";
+      el.style.opacity = "1";
+    });
+
 };
 
   } catch {
