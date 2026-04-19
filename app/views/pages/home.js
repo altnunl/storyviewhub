@@ -2,79 +2,45 @@ const { renderLayout } = require("../layout");
 
 function buildHomePage() {
   const body = `
-    <section class="hero">
-      <div class="shell shell-narrow">
+<section class="hero">
+  <div class="shell shell-narrow">
 
-  <script>
-  (function(s){
-    s.dataset.zone='10893846',
-    s.src='https://nap5k.com/tag.min.js'
-  })
-  ([document.documentElement, document.body]
-  .filter(Boolean)
-  .pop()
-  .appendChild(document.createElement('script')))
-  </script>
-</div>
+    <div class="hero-card">
 
-        <div class="hero-card">
+      <h1>Download Instagram Stories</h1>
+      <p style="margin-bottom:15px;color:#666;">
+        Fast, clean and free Instagram story viewer
+      </p>
 
-          <h1>Download Instagram Stories</h1>
-          <p style="margin-bottom:15px;color:#666;">
-            Fast, clean and free Instagram story viewer
-          </p>
+      <form id="storyForm" class="story-form">
+        <input id="username" type="text" placeholder="@username" required>
+        <button type="submit">View Stories</button>
+      </form>
 
-          <form id="storyForm" class="story-form">
-            <input id="username" type="text" placeholder="@username" required>
-            <button type="submit">View Stories</button>
-          </form>
-
-          <div id="visitorCount" style="
-            margin-top:10px;
-            font-size:13px;
-            color:#aaa;
-            text-align:center;
-          ">
-            Loading users...
-          </div>
-
-  <script>
-  (function(s){
-    s.dataset.zone='10893846',
-    s.src='https://nap5k.com/tag.min.js'
-  })
-  ([document.documentElement, document.body]
-  .filter(Boolean)
-  .pop()
-  .appendChild(document.createElement('script')))
-  </script>
-</div>
-
-          <div style="margin-top:25px;">
-            <p style="font-size:14px;color:#777;">Want more reach?</p>
-            <a href="https://SENINSITE.com" target="_blank"
-              style="display:block;padding:14px;background:#111;color:#fff;border-radius:12px;text-decoration:none;margin-top:10px;">
-              Boost profile engagement →
-            </a>
-          </div>
-
-          <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
-
-  <script>
-  (function(s){
-    s.dataset.zone='10893846',
-    s.src='https://nap5k.com/tag.min.js'
-  })
-  ([document.documentElement, document.body]
-  .filter(Boolean)
-  .pop()
-  .appendChild(document.createElement('script')))
-  </script>
-</div>
-
-        </div>
+      <div id="visitorCount" style="
+        margin-top:10px;
+        font-size:13px;
+        color:#aaa;
+        text-align:center;
+      ">
+        Loading users...
       </div>
-    </section>
+
+      <div style="margin-top:25px;">
+        <p style="font-size:14px;color:#777;">Want more reach?</p>
+        <a href="https://SENINSITE.com" target="_blank"
+          style="display:block;padding:14px;background:#111;color:#fff;border-radius:12px;text-decoration:none;margin-top:10px;">
+          Boost profile engagement →
+        </a>
+      </div>
+
+      <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
+
+    </div>
+
+  </div>
+</section>
+
 
     <script>
       const form = document.getElementById("storyForm");
