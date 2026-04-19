@@ -244,8 +244,6 @@ function buildHomePage() {
     window.adShown = true;
 
     (function(s){
-      s.dataset.zone = '10893744';
-      s.src = 'https://al5sm.com/tag.min.js';
     })
     ([document.documentElement, document.body]
     .filter(Boolean)

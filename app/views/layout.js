@@ -18,20 +18,11 @@ function renderLayout({
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="icon" href="/favicon.ico">
-  <!-- 🔥 MONETAG POPUNDER SCRIPT (DOĞRU) -->
-  <script>
-  
-  ([document.documentElement, document.body]
-  .filter(Boolean)
-  .pop()
-  .appendChild(document.createElement('script')))
-  </script>
 
   ${buildMetaTags({ title, description, pathname, indexable })}
   <link rel="preload" href="/static/styles.css" as="style">
   <link rel="stylesheet" href="/static/styles.css?v=2">
 
-  <!-- 🔥 FIX: ANIMATION TRANSFORM ÇAKIŞMA -->
   <style>
     @keyframes pulseGlow {
       0% { transform: translateX(-50%) scale(1); }
@@ -75,6 +66,16 @@ function renderLayout({
 
 ${extraBody}
 
+<!-- 🔥 MONETAG VIGNETTE (DOĞRU ENTEGRASYON) -->
+<script>
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://n6wxm.com/vignette.min.js';
+  s.dataset.zone = '10896308';
+  document.body.appendChild(s);
+})();
+</script>
+
 <script>
   let hasScrolledEnough = false;
   let hasWaitedEnough = false;
@@ -83,7 +84,6 @@ ${extraBody}
 
   function updateStickyText() {
     const sticky = document.getElementById("stickyCta");
-
     if (!sticky) return;
 
     if (window.location.pathname.includes("/user/")) {
