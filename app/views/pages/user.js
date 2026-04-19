@@ -188,7 +188,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
 
         </div>
 
-        <div class="ad-slot ad-slot-wide">
         </div>
 
         <div id="storyContainer">
@@ -199,7 +198,6 @@ function buildUserPage({ user, stories, relatedUsers }) {
           🔥 ${randomUsers}+ users boosted profiles today
         </div>
 
-        <div class="ad-slot ad-slot-wide">
         </div>
 
         <section style="text-align:center; margin-top:30px;">

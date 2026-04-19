@@ -5,7 +5,6 @@ function buildHomePage() {
     <section class="hero">
       <div class="shell shell-narrow">
 
-        <div class="ad-slot">
   <script>
   (function(s){
     s.dataset.zone='10893846',
@@ -39,7 +38,6 @@ function buildHomePage() {
             Loading users...
           </div>
 
-          <div class="ad-slot">
   <script>
   (function(s){
     s.dataset.zone='10893846',
@@ -62,7 +60,6 @@ function buildHomePage() {
 
           <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
 
-          <div class="ad-slot">
   <script>
   (function(s){
     s.dataset.zone='10893846',
