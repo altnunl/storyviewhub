@@ -77,14 +77,14 @@ function buildHomePage() {
       <div id="visitorCount" style="
         margin-top:10px;
         font-size:13px;
-        color:#aaa;
+        color:#4b5563;
         text-align:center;
       ">
         Loading users...
       </div>
 
       <div style="margin-top:25px;">
-        <p style="font-size:14px;color:#777;">Want more reach?</p>
+        <p style="font-size:14px;color:#4b5563;">Want more reach?</p>
         <a href="https://SENINSITE.com" target="_blank"
           style="display:block;padding:14px;background:#111;color:#fff;border-radius:12px;text-decoration:none;margin-top:10px;">
           Boost profile engagement →
