@@ -1,6 +1,63 @@
 const { renderLayout } = require("../layout");
 
+const faqItems = [
+  {
+    question: "Can someone see if I view their Instagram story?",
+    answer: "If you open a story inside Instagram while logged in, Instagram can include your account in that story's viewer information. This tool is built to view public story results without signing in through the page."
+  },
+  {
+    question: "How can I view someone's Instagram story anonymously?",
+    answer: "Enter the public username in the search box, wait for available stories to load, then use the viewer on this page instead of opening the story from your own Instagram profile."
+  },
+  {
+    question: "Does Instagram show how many times I viewed a story?",
+    answer: "The viewer and count information shown inside Instagram is controlled by Instagram. This site does not show a replay counter or send a logged-in view from your account while you use it."
+  },
+  {
+    question: "Can someone see if I screenshot their Instagram story?",
+    answer: "This website does not take screenshots or report screenshot activity. Instagram controls any notifications inside its own app, especially for private message features, so treat screenshots carefully."
+  },
+  {
+    question: "Do I need an Instagram account to use the story viewer?",
+    answer: "No. The page does not ask you to log in. It only works with public story data that can be returned for the username you search."
+  },
+  {
+    question: "Can I view stories from private Instagram accounts?",
+    answer: "No. This tool is intended for publicly available Instagram stories. It cannot unlock private accounts or bypass Instagram privacy settings."
+  },
+  {
+    question: "Can I download Instagram stories?",
+    answer: "If public story media is available, the results include a Download link that opens the media in a new tab."
+  }
+];
+
+function buildFaqJsonLd() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
+
+  return JSON.stringify(schema).replace(/</g, "\\u003c");
+}
+
 function buildHomePage() {
+  const faqMarkup = faqItems
+    .map((item) => `
+        <article class="home-seo-faq-item">
+          <h3>${item.question}</h3>
+          <p>${item.answer}</p>
+        </article>
+      `)
+    .join("");
+
   const body = `
 <section class="hero">
   <div class="shell shell-narrow">
@@ -278,12 +335,84 @@ function buildHomePage() {
         }
       });
     </script>
+
+<section class="home-seo-section" aria-labelledby="homeSeoTitle">
+  <div class="shell">
+    <div class="home-seo-panel">
+      <div class="home-seo-intro">
+        <span class="home-seo-kicker">Instagram Story Viewer</span>
+        <h2 id="homeSeoTitle">Anonymous Instagram Story Viewer</h2>
+        <p>
+          Use Story Saver as a simple Instagram Story Viewer for checking public stories without signing in through this page.
+          Enter a username, wait for available story media, and open results from one clean place.
+        </p>
+      </div>
+
+      <div class="home-seo-grid">
+        <article class="home-seo-card">
+          <h2>View Instagram Stories Anonymously</h2>
+          <p>
+            When you want to view someone's Instagram story without it showing from your own account, this page keeps the search flow separate from an Instagram login.
+            It is built for public story results and quick checks from mobile or desktop.
+          </p>
+        </article>
+
+        <article class="home-seo-card">
+          <h2>Instagram Story Downloader</h2>
+          <p>
+            When story media is available, the results can include a download link for opening the photo or video in a new tab.
+            This makes the tool useful as an Insta Story Viewer and a lightweight Instagram story downloader for public content.
+          </p>
+        </article>
+      </div>
+
+      <section class="home-seo-steps" aria-labelledby="homeSeoStepsTitle">
+        <div class="home-seo-wide">
+          <h2 id="homeSeoStepsTitle">How to Use the Instagram Story Viewer</h2>
+        </div>
+
+        <article class="home-seo-step">
+          <span class="home-seo-step-number">1</span>
+          <h3>Enter a username</h3>
+          <p>Type a public Instagram username into the search field. You can start with or without the @ symbol.</p>
+        </article>
+
+        <article class="home-seo-step">
+          <span class="home-seo-step-number">2</span>
+          <h3>Wait for story results</h3>
+          <p>The page checks for available public stories and prepares the viewer when media can be returned.</p>
+        </article>
+
+        <article class="home-seo-step">
+          <span class="home-seo-step-number">3</span>
+          <h3>View or download</h3>
+          <p>Use the story view results on the page, then open the download link when a public photo or video is available.</p>
+        </article>
+      </section>
+
+      <section class="home-seo-privacy" aria-labelledby="homeSeoPrivacyTitle">
+        <h2 id="homeSeoPrivacyTitle">View Public Instagram Stories Without Logging In</h2>
+        <p>
+          Story Saver is designed for anonymous Instagram story view sessions on public content.
+          The page does not ask for your Instagram password, and it does not claim to show private accounts or bypass privacy controls.
+          If you are researching how to view an Instagram profile anonymously, use the tool only for public usernames and respect the creator's privacy settings.
+        </p>
+      </section>
+
+      <section class="home-seo-faq" aria-labelledby="homeSeoFaqTitle">
+        <h2 id="homeSeoFaqTitle">Frequently Asked Questions</h2>
+        ${faqMarkup}
+      </section>
+    </div>
+  </div>
+</section>
   `;
 
   return renderLayout({
-    title: "Download Instagram Stories",
-    description: "View and download Instagram story pages",
+    title: "Instagram Story Viewer - View Stories Anonymously",
+    description: "Use this Instagram Story Viewer to view public Instagram stories anonymously, check available stories without logging in, and download story media when results are available.",
     pathname: "/",
+    extraHead: `<script type="application/ld+json">${buildFaqJsonLd()}</script>`,
     body
   });
 }
