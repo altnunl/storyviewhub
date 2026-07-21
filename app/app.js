@@ -20,6 +20,10 @@ function createApp() {
     immutable: true
   }));
 
+  app.get("/favicon.ico", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "favicon.ico"));
+  });
+
   // 🔥 CACHE (EN KRİTİK FIX)
   const storyCache = {};
   const CACHE_DURATION = 60 * 1000; // 60 saniye
