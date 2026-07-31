@@ -70,9 +70,34 @@ function createApp() {
     return /bot|crawl|spider|slurp|facebookexternalhit|wget|curl/i.test(ua);
   }
 
-  app.get("/", (req, res) => {
+  let visitorCount = 0;
+
+  function shouldCountHtmlPageVisit(req) {
+    const ua = req.headers["user-agent"] || "";
+    return req.method === "GET" && !/bot|crawl|spider|slurp|facebookexternalhit|wget|curl|uptime|health|monitor|railway/i.test(ua);
+  }
+
+  function incrementVisitorCount(req, res) {
+    if (!shouldCountHtmlPageVisit(req) || res.locals.visitorCounted) {
+      return res.locals.visitorCount || visitorCount;
+    }
+
+    visitorCount++;
+    res.locals.visitorCount = visitorCount;
+    res.locals.visitorCounted = true;
+    return visitorCount;
+  }
+
+  function countHtmlPageVisit(req, res, next) {
+    incrementVisitorCount(req, res);
+    next();
+  }
+
+  app.get("/", countHtmlPageVisit, (req, res) => {
     res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
-    res.status(200).send(buildHomePage());
+    res.status(200).send(buildHomePage({
+      visitorCount: res.locals.visitorCount || visitorCount
+    }));
   });
 
   const seoRedirects = new Map();
@@ -99,7 +124,7 @@ function createApp() {
   });
 
   getCanonicalSeoPaths().forEach((pathname) => {
-    app.get(pathname, (req, res, next) => {
+    app.get(pathname, countHtmlPageVisit, (req, res, next) => {
       const platformPage = getPlatformByPath(pathname);
 
       if (platformPage) {
@@ -152,13 +177,6 @@ function createApp() {
     }
   });
 
-  let visitorCount = 0;
-
-  app.get("/api/count", (req, res) => {
-    visitorCount++;
-    res.json({ count: visitorCount });
-  });
-
   app.get("/result", (req, res) => {
     res.set("X-Robots-Tag", "noindex, nofollow");
     const normalized = normalizeUsername(
@@ -167,6 +185,7 @@ function createApp() {
 
     if (!normalized.ok) {
       const relatedUsers = getRelatedUsers(siteConfig.featuredUsernames[0], 12);
+      incrementVisitorCount(req, res);
       return res.status(404).send(buildProfileNotFoundPage({
         pathname: "/user/not-found",
         relatedUsers
@@ -176,7 +195,7 @@ function createApp() {
     return res.redirect(303, `/user/${encodeURIComponent(normalized.username)}`);
   });
 
-  app.get("/user/:username", async (req, res) => {
+  app.get("/user/:username", countHtmlPageVisit, async (req, res) => {
     const normalized = normalizeUsername(
       typeof req.params.username === "string" ? req.params.username : ""
     );

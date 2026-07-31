@@ -48,7 +48,8 @@ function buildFaqJsonLd() {
   return JSON.stringify(schema).replace(/</g, "\\u003c");
 }
 
-function buildHomePage() {
+function buildHomePage({ visitorCount = 0 } = {}) {
+  const renderedVisitorCount = Math.max(0, Number.parseInt(visitorCount, 10) || 0);
   const faqMarkup = faqItems
     .map((item) => `
         <article class="home-seo-faq-item">
@@ -81,7 +82,7 @@ function buildHomePage() {
         color:#4b5563;
         text-align:center;
       ">
-        Loading users...
+        ${renderedVisitorCount} people used this tool today
       </div>
 
       <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
@@ -113,32 +114,6 @@ function buildHomePage() {
           return "";
         }
       }
-
-      async function loadVisitorCount() {
-        try {
-          const res = await fetch("/api/count");
-          const data = await res.json();
-
-          const el = document.getElementById("visitorCount");
-
-          let current = data.count - 5;
-          if (current < 0) current = 0;
-
-          const interval = setInterval(() => {
-            current++;
-            el.innerText = current + " people used this tool today";
-
-            if (current >= data.count) {
-              clearInterval(interval);
-            }
-          }, 80);
-
-        } catch (err) {
-          console.log("count error");
-        }
-      }
-
-      loadVisitorCount();
 
       const style = document.createElement("style");
       style.innerHTML = \`
