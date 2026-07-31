@@ -84,14 +84,6 @@ function buildHomePage() {
         Loading users...
       </div>
 
-      <div style="margin-top:25px;">
-        <p style="font-size:14px;color:#4b5563;">Want more reach?</p>
-        <a href="https://SENINSITE.com" target="_blank"
-          style="display:block;padding:14px;background:#111;color:#fff;border-radius:12px;text-decoration:none;margin-top:10px;">
-          Boost profile engagement ->
-        </a>
-      </div>
-
       <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
 
     </div>
@@ -267,20 +259,20 @@ function buildHomePage() {
         <article class="home-seo-card">
           <h3>Deutsch</h3>
           <p>
-            FÃ¼r Ã¶ffentliche Profile bietet StoryViewHub einen klaren Instagram Story Viewer, der direkt im Browser funktioniert.
-            Wer eine Story anonym ansehen mÃ¶chte, kann den Nutzernamen eingeben und verfÃ¼gbare Inhalte prÃ¼fen, ohne sich hier bei Instagram anzumelden.
-            Story Saver Insta hilft auÃŸerdem, Ã¶ffentlich verfÃ¼gbare Fotos oder Videos schneller zu Ã¶ffnen.
+            Für öffentliche Profile bietet StoryViewHub einen klaren Instagram Story Viewer, der direkt im Browser funktioniert.
+            Wer eine Story anonym ansehen möchte, kann den Nutzernamen eingeben und verfügbare Inhalte prüfen, ohne sich hier bei Instagram anzumelden.
+            Story Saver Insta hilft außerdem, öffentlich verfügbare Fotos oder Videos schneller zu öffnen.
             Wenn Medien bereitstehen, kann der Story Downloader sie in einem neuen Tab anzeigen, damit du sie bequem speichern kannst.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>EspaÃ±ol</h3>
+          <h3>Español</h3>
           <p>
-            Para Ver historias de Instagram desde una pÃ¡gina limpia, StoryViewHub ofrece un Story Viewer pensado para perfiles pÃºblicos.
-            Solo escribe el nombre de usuario y revisa las stories disponibles sin iniciar sesiÃ³n en esta pÃ¡gina.
-            Story Saver resulta Ãºtil cuando quieres guardar una foto o un video pÃºblico para consultarlo despuÃ©s.
-            Si el contenido estÃ¡ disponible, puedes Descargar Stories abriendo el enlace de descarga en una nueva pestaÃ±a.
+            Para Ver historias de Instagram desde una página limpia, StoryViewHub ofrece un Story Viewer pensado para perfiles públicos.
+            Solo escribe el nombre de usuario y revisa las stories disponibles sin iniciar sesión en esta página.
+            Story Saver resulta útil cuando quieres guardar una foto o un video público para consultarlo después.
+            Si el contenido está disponible, puedes Descargar Stories abriendo el enlace de descarga en una nueva pestaña.
           </p>
         </article>
 
@@ -289,28 +281,28 @@ function buildHomePage() {
           <p>
             Il Visualizzatore Storie Instagram di StoryViewHub aiuta a controllare le storie pubbliche con un flusso semplice e veloce.
             Inserisci il nome utente, attendi i risultati e guarda i contenuti disponibili senza effettuare il login su questa pagina.
-            Story Saver Ã¨ pratico anche quando vuoi aprire foto o video pubblici in modo ordinato.
-            Quando il media Ã¨ disponibile, puoi Scaricare Stories tramite il link dedicato.
+            Story Saver è pratico anche quando vuoi aprire foto o video pubblici in modo ordinato.
+            Quando il media è disponibile, puoi Scaricare Stories tramite il link dedicato.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>FranÃ§ais</h3>
+          <h3>Français</h3>
           <p>
             StoryViewHub propose une Visionneuse Story Instagram simple pour consulter les stories publiques depuis le navigateur.
-            Saisis un nom d'utilisateur public, attends les rÃ©sultats, puis ouvre les contenus disponibles sans connexion Instagram sur cette page.
-            Story Saver peut aussi servir Ã  conserver un accÃ¨s rapide aux mÃ©dias publics.
-            Quand une photo ou une vidÃ©o est disponible, l'option TÃ©lÃ©charger Story l'ouvre dans un nouvel onglet.
+            Saisis un nom d'utilisateur public, attends les résultats, puis ouvre les contenus disponibles sans connexion Instagram sur cette page.
+            Story Saver peut aussi servir à conserver un accès rapide aux médias publics.
+            Quand une photo ou une vidéo est disponible, l'option Télécharger Story l'ouvre dans un nouvel onglet.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>PortuguÃªs</h3>
+          <h3>Português</h3>
           <p>
-            O Visualizador de Stories do StoryViewHub foi criado para quem quer consultar stories pÃºblicos de forma simples, rÃ¡pida e online.
-            Digite o nome de usuÃ¡rio pÃºblico e veja os resultados disponÃ­veis sem fazer login nesta pÃ¡gina.
-            O Story Saver ajuda quando vocÃª precisa abrir uma foto ou um vÃ­deo pÃºblico com mais praticidade.
-            Se a mÃ­dia estiver disponÃ­vel, use Baixar Stories pelo link exibido nos resultados.
+            O Visualizador de Stories do StoryViewHub foi criado para quem quer consultar stories públicos de forma simples, rápida e online.
+            Digite o nome de usuário público e veja os resultados disponíveis sem fazer login nesta página.
+            O Story Saver ajuda quando você precisa abrir uma foto ou um vídeo público com mais praticidade.
+            Se a mídia estiver disponível, use Baixar Stories pelo link exibido nos resultados.
           </p>
         </article>
       </section>

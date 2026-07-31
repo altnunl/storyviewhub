@@ -1,5 +1,4 @@
 const { buildMetaTags } = require("../utils/seo");
-const { siteConfig } = require("../config/site");
 const { monetagConfig } = require("../config/monetag");
 const { platformPages } = require("../services/seoPageService");
 const { escapeAttribute, safeJsonForScript } = require("../utils/html");
@@ -141,14 +140,6 @@ function renderLayout({
 
 <body>
 
-<div class="promo-bar" id="promoBar">
-  <span>
-    🔥 Get 10% OFF – Use code <strong>FOLLOWONNET10</strong>
-  </span>
-  <a href="${siteConfig.smmUrl}" target="_blank">Shop Now</a>
-  <span class="promo-close" onclick="closePromo()">✕</span>
-</div>
-
 <header class="site-header">
   <div class="shell header-shell">
     ${renderHeaderBrand(pathname)}
@@ -159,10 +150,6 @@ function renderLayout({
   ${body}
 </main>
 
-<a href="${siteConfig.smmUrl}" class="sticky-cta" id="stickyCta">
-  Boost story views
-</a>
-
 <footer class="site-footer">
   <div class="shell footer-shell">
     <p>Fast SSR pages built for search traffic and social growth funnels.</p>
@@ -172,90 +159,8 @@ function renderLayout({
 
 ${extraBody}
 
-<!-- 🔥 MONETAG VIGNETTE (DOĞRU ENTEGRASYON) -->
+<!-- Monetag integration -->
 ${renderMonetagScripts()}
-
-<script>
-  let hasScrolledEnough = false;
-  let hasWaitedEnough = false;
-  let shown = false;
-  let exitTriggered = false;
-
-  function updateStickyText() {
-    const sticky = document.getElementById("stickyCta");
-    if (!sticky) return;
-
-    if (window.location.pathname.includes("/user/")) {
-      sticky.textContent = "Boost this profile 🚀";
-    } else {
-      sticky.textContent = "Boost story views";
-    }
-  }
-
-  function tryShowElements() {
-    if (shown) return;
-
-    if (hasScrolledEnough && hasWaitedEnough) {
-      shown = true;
-
-      const sticky = document.querySelector('.sticky-cta');
-      const promo = document.querySelector('#promoBar');
-
-      if (promo) {
-        promo.style.display = 'flex';
-      }
-
-      if (sticky) {
-        setTimeout(() => {
-          sticky.style.display = 'flex';
-
-          setTimeout(() => {
-            sticky.classList.add("show");
-          }, 50);
-
-        }, 2000);
-      }
-    }
-  }
-
-  window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    const height = document.body.scrollHeight - window.innerHeight;
-
-    if (height > 0 && scrollY / height > 0.4) {
-      hasScrolledEnough = true;
-      tryShowElements();
-    }
-  });
-
-  setTimeout(() => {
-    hasWaitedEnough = true;
-    tryShowElements();
-  }, 3000);
-
-  document.addEventListener("mouseleave", function(e) {
-    if (e.clientY < 10 && !exitTriggered) {
-      exitTriggered = true;
-
-      const promo = document.getElementById("promoBar");
-
-      if (promo) {
-        promo.style.display = "flex";
-        promo.innerHTML = \`
-          ⚠️ Wait! Get 15% OFF – <strong>LAST CHANCE</strong>
-          <a href="${siteConfig.smmUrl}" target="_blank">Claim Now</a>
-        \`;
-      }
-    }
-  });
-
-  function closePromo() {
-    const promo = document.getElementById('promoBar');
-    if (promo) promo.style.display = 'none';
-  }
-
-  updateStickyText();
-</script>
 
 </body>
 </html>`;

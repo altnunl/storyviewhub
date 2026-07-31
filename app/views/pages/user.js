@@ -1,5 +1,4 @@
 const { renderLayout } = require("../layout");
-const { siteConfig } = require("../../config/site");
 const {
   escapeAttribute,
   escapeHtml,
@@ -66,7 +65,6 @@ function buildUserPage({ user, stories = [], relatedUsers = [] }) {
   const dynamicText = generateUniqueText(user.slug);
   const dynamicTextHtml = escapeHtml(dynamicText);
   const dynamicTextJson = safeJsonForScript(dynamicText);
-  const randomUsers = Math.floor(Math.random() * 4000) + 1200;
 
   let storySection = "";
 
@@ -83,20 +81,6 @@ function buildUserPage({ user, stories = [], relatedUsers = [] }) {
           Last checked a few moments ago
         </p>
 
-        <div style="margin-top:20px;">
-          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
-            style="
-              display:inline-block;
-              padding:14px 20px;
-              background:#111;
-              color:#fff;
-              border-radius:12px;
-              text-decoration:none;
-              font-size:14px;
-            ">
-            Boost profile activity
-          </a>
-        </div>
       </div>
     `;
   } else {
@@ -217,39 +201,6 @@ function buildUserPage({ user, stories = [], relatedUsers = [] }) {
 
         <div id="storyContainer">
           ${storySection}
-        </div>
-
-        <div style="text-align:center; margin:20px 0; font-size:13px; color:#888;">
-          ${randomUsers}+ users boosted profiles today
-        </div>
-
-        <section style="text-align:center; margin-top:30px;">
-          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
-            style="
-              display:inline-block;
-              width:90%;
-              max-width:360px;
-              padding:16px;
-              background:#e25b34;
-              color:#fff;
-              border-radius:14px;
-              text-decoration:none;
-              font-weight:600;
-              font-size:16px;
-            ">
-            Boost @${safeSlug} to viral
-          </a>
-
-          <div style="margin-top:8px; font-size:12px; color:#777;">
-            No login - Instant delivery
-          </div>
-        </section>
-
-        <div style="text-align:center; margin-top:15px;">
-          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
-            style="font-size:13px; color:#555; text-decoration:underline;">
-            See how it works
-          </a>
         </div>
 
       </div>

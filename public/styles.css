@@ -614,7 +614,7 @@ header {
 
 /* Sabit promo bar için güvenli üst boşluk */
 body {
-  padding-top: 64px;
+  padding-top: 0;
 }/* 🔥 Sticky başlangıçta gizli */
 .sticky-cta {
   display: none;
@@ -751,7 +751,7 @@ body {
 }/* DESKTOP FIX */
 @media (min-width: 1024px) {
     main {
-        margin-top: -80px !important;
+        margin-top: 0 !important;
         padding-top: 0 !important;
     }
 
@@ -905,7 +905,7 @@ body {
 
 @media (max-width: 767px) {
   body {
-    padding-top: 66px !important;
+    padding-top: 0 !important;
   }
 
   .site-header {
