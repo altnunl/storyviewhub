@@ -3,16 +3,35 @@ const path = require("path");
 
 const { siteConfig } = require("./config/site");
 const { buildHomePage } = require("./views/pages/home");
-const { buildUserPage } = require("./views/pages/user");
+const { buildPlatformSeoPage, buildToolSeoPage } = require("./views/pages/seoPage");
+const { buildProfileNotFoundPage, buildUserPage } = require("./views/pages/user");
+const {
+  getCanonicalSeoPaths,
+  getPlatformByPath,
+  getPlatformBySlug,
+  getRelatedTools,
+  getToolByPath,
+  getTrailingSlashRedirects,
+  redirects
+} = require("./services/seoPageService");
 const { findUserByUsername, getRelatedUsers } = require("./services/userService");
 const { getStoriesForUsername } = require("./services/storyService");
 const { buildSitemapXml } = require("./utils/seo");
+const { normalizeUsername } = require("./utils/username");
 
 function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
   app.set("trust proxy", true);
+
+  app.use((req, res, next) => {
+    res.set("X-Content-Type-Options", "nosniff");
+    res.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+    res.set("X-Frame-Options", "SAMEORIGIN");
+    next();
+  });
 
   app.use(express.urlencoded({ extended: false }));
   app.use("/static", express.static(path.join(__dirname, "..", "public"), {
@@ -56,10 +75,66 @@ function createApp() {
     res.status(200).send(buildHomePage());
   });
 
-  app.get("/api/story", async (req, res) => {
-    const username = req.query.username;
+  const seoRedirects = new Map();
+  [...getTrailingSlashRedirects(), ...redirects].forEach((redirect) => {
+    seoRedirects.set(redirect.from, redirect);
 
-    if (!username) {
+    if (redirect.from.endsWith("/") && redirect.from !== "/") {
+      seoRedirects.set(redirect.from.slice(0, -1), {
+        from: redirect.from.slice(0, -1),
+        to: redirect.to,
+        status: redirect.status
+      });
+    }
+  });
+
+  seoRedirects.forEach((redirect) => {
+    app.get(redirect.from, (req, res, next) => {
+      if (req.path !== redirect.from) {
+        return next();
+      }
+
+      res.redirect(redirect.status, redirect.to);
+    });
+  });
+
+  getCanonicalSeoPaths().forEach((pathname) => {
+    app.get(pathname, (req, res, next) => {
+      const platformPage = getPlatformByPath(pathname);
+
+      if (platformPage) {
+        res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
+        return res.status(200).send(buildPlatformSeoPage(platformPage));
+      }
+
+      const toolPage = getToolByPath(pathname);
+
+      if (!toolPage) {
+        return next();
+      }
+
+      const platform = getPlatformBySlug(toolPage.platform);
+
+      if (!platform) {
+        return next();
+      }
+
+      res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
+      return res.status(200).send(buildToolSeoPage({
+        page: toolPage,
+        platform,
+        relatedTools: getRelatedTools(toolPage),
+        submitted: typeof req.query[toolPage.form.inputName] === "string"
+      }));
+    });
+  });
+
+  app.get("/api/story", async (req, res) => {
+    const normalized = normalizeUsername(
+      typeof req.query.username === "string" ? req.query.username : ""
+    );
+
+    if (!normalized.ok) {
       return res.json({ stories: [] });
     }
 
@@ -69,7 +144,7 @@ function createApp() {
     }
 
     try {
-      const stories = await getStoriesSafe(username);
+      const stories = await getStoriesSafe(normalized.username);
       res.json({ stories });
     } catch (err) {
       console.log("API ERROR:", err.message);
@@ -85,35 +160,45 @@ function createApp() {
   });
 
   app.get("/result", (req, res) => {
-    const rawUsername = typeof req.query.username === "string" ? req.query.username : "";
-    const cleanedUsername = rawUsername.trim().replace(/^@+/, "").toLowerCase();
+    res.set("X-Robots-Tag", "noindex, nofollow");
+    const normalized = normalizeUsername(
+      typeof req.query.username === "string" ? req.query.username : ""
+    );
 
-    if (!cleanedUsername) {
-      return res.redirect(302, "/");
+    if (!normalized.ok) {
+      const relatedUsers = getRelatedUsers(siteConfig.featuredUsernames[0], 12);
+      return res.status(404).send(buildProfileNotFoundPage({
+        pathname: "/user/not-found",
+        relatedUsers
+      }));
     }
 
-    res.set("X-Robots-Tag", "noindex, nofollow");
-    return res.redirect(302, `/user/${encodeURIComponent(cleanedUsername)}`);
+    return res.redirect(303, `/user/${encodeURIComponent(normalized.username)}`);
   });
 
   app.get("/user/:username", async (req, res) => {
-    const username = String(req.params.username || "").trim().replace(/^@+/, "").toLowerCase();
+    const normalized = normalizeUsername(
+      typeof req.params.username === "string" ? req.params.username : ""
+    );
+    const relatedUsers = getRelatedUsers(siteConfig.featuredUsernames[0], 12);
 
-    if (!username) {
-      return res.redirect(302, "/");
+    if (!normalized.ok) {
+      res.set("Cache-Control", "public, max-age=60, s-maxage=300");
+      return res.status(404).send(buildProfileNotFoundPage({
+        pathname: "/user/not-found",
+        relatedUsers
+      }));
     }
 
-    let user = findUserByUsername(username);
+    const username = normalized.username;
+    const user = findUserByUsername(username);
 
     if (!user) {
-      user = {
-        slug: username,
-        displayName: username
-          .split(/[._-]/g)
-          .filter(Boolean)
-          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(" ") || username
-      };
+      res.set("Cache-Control", "public, max-age=60, s-maxage=300");
+      return res.status(404).send(buildProfileNotFoundPage({
+        pathname: `/user/${encodeURIComponent(username)}`,
+        relatedUsers
+      }));
     }
 
     // 🔥 CRITICAL FIX: SAYFA RENDER'DA APIFY YOK
@@ -129,8 +214,6 @@ function createApp() {
       console.log("USER PAGE STORY ERROR:", err.message);
       stories = [];
     }
-
-    const relatedUsers = getRelatedUsers(siteConfig.featuredUsernames[0], 12);
 
     res.set("Cache-Control", "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400");
     res.status(200).send(buildUserPage({

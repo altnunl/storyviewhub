@@ -69,10 +69,11 @@ function buildHomePage() {
         Fast, clean and free Instagram story viewer
       </p>
 
-      <form id="storyForm" class="story-form">
-        <input id="username" type="text" placeholder="@username" required>
+      <form id="storyForm" class="story-form" action="/result" method="GET" data-monetag-direct-link="true" data-monetag-validate="instagram-username" aria-describedby="homeAdDisclosure">
+        <input id="username" name="username" type="text" placeholder="@username" required>
         <button type="submit">View Stories</button>
       </form>
+      <p class="ad-disclosure" id="homeAdDisclosure">An advertising tab may open to support this free service.</p>
 
       <div id="visitorCount" style="
         margin-top:10px;
@@ -87,7 +88,7 @@ function buildHomePage() {
         <p style="font-size:14px;color:#4b5563;">Want more reach?</p>
         <a href="https://SENINSITE.com" target="_blank"
           style="display:block;padding:14px;background:#111;color:#fff;border-radius:12px;text-decoration:none;margin-top:10px;">
-          Boost profile engagement →
+          Boost profile engagement ->
         </a>
       </div>
 
@@ -102,6 +103,24 @@ function buildHomePage() {
     <script>
       const form = document.getElementById("storyForm");
       const resultDiv = document.getElementById("result");
+      const usernamePattern = /^[a-z0-9._]{1,30}$/;
+
+      function normalizeUsernameInput(value) {
+        const username = String(value || "").trim().replace(/^@+/, "").toLowerCase();
+        return usernamePattern.test(username) ? username : "";
+      }
+
+      function safeMediaUrl(value) {
+        try {
+          const url = new URL(String(value || ""));
+          if (url.protocol !== "http:" && url.protocol !== "https:") {
+            return "";
+          }
+          return url.href;
+        } catch {
+          return "";
+        }
+      }
 
       async function loadVisitorCount() {
         try {
@@ -115,7 +134,7 @@ function buildHomePage() {
 
           const interval = setInterval(() => {
             current++;
-            el.innerText = "🔥 " + current + " people used this tool today";
+            el.innerText = current + " people used this tool today";
 
             if (current >= data.count) {
               clearInterval(interval);
@@ -161,178 +180,17 @@ function buildHomePage() {
       \`;
       document.head.appendChild(style);
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      form.addEventListener("submit", (e) => {
+        const input = document.getElementById("username");
+        const username = normalizeUsernameInput(input.value);
 
-        const username = document.getElementById("username").value;
-
-        resultDiv.innerHTML = \`
-          <div style="padding:20px;">
-
-            <div style="display:flex;gap:4px;margin-bottom:15px;">
-              \${Array(5).fill(\`
-                <div style="flex:1;height:3px;background:#333;border-radius:3px;overflow:hidden;">
-                  <div class="bar-fill"></div>
-                </div>
-              \`).join("")}
-            </div>
-
-            <div id="loadingText" style="text-align:center;margin-bottom:20px;color:#aaa;transition:opacity 0.3s;">
-              Opening story viewer...
-            </div>
-
-            <div style="display:flex;gap:10px;">
-              \${Array(4).fill(\`
-                <div style="
-                  width:80px;
-                  height:140px;
-                  border-radius:12px;
-                  background:linear-gradient(90deg,#1a1a1a,#2a2a2a,#1a1a1a);
-                  background-size:200% 100%;
-                  animation: shimmer 1.5s infinite, float 3s ease-in-out infinite;
-                "></div>
-              \`).join("")}
-            </div>
-
-          </div>
-        \`;
-
-        document.querySelectorAll(".bar-fill").forEach((bar, i) => {
-          setTimeout(() => {
-            bar.style.width = "100%";
-          }, i * 400);
-        });
-
-        const texts = [
-          "Connecting to Instagram...",
-          "Fetching stories...",
-          "Preparing viewer...",
-          "Almost ready..."
-        ];
-
-        let ti = 0;
-
-        const textInterval = setInterval(() => {
-          const el = document.getElementById("loadingText");
-          if (!el) return;
-
-          el.style.opacity = "0";
-          setTimeout(() => {
-            el.innerText = texts[ti % texts.length];
-            el.style.opacity = "1";
-            ti++;
-          }, 200);
-        }, 1500);
-
-        try {
-          const res = await fetch("/api/story?username=" + username);
-          const data = await res.json();
-
-          clearInterval(textInterval);
-
-          if (!data.stories || data.stories.length === 0) {
-            resultDiv.innerHTML = "No stories found.";
-            return;
-          }
-
-          resultDiv.style.opacity = "0";
-
-          setTimeout(() => {
-            resultDiv.innerHTML = "";
-            resultDiv.style.opacity = "1";
-
-            const unlockBtn = document.createElement("button");
-            unlockBtn.innerText = "Unlock Stories";
-
-            unlockBtn.style.margin = "15px";
-            unlockBtn.style.padding = "12px 20px";
-            unlockBtn.style.background = "linear-gradient(135deg,#ff3b3b,#ff0000)";
-            unlockBtn.style.color = "white";
-            unlockBtn.style.border = "1px solid rgba(255,255,255,0.2)";
-            unlockBtn.style.borderRadius = "10px";
-            unlockBtn.style.cursor = "pointer";
-            unlockBtn.style.boxShadow = "0 8px 25px rgba(255,0,0,0.4)";
-            unlockBtn.style.fontWeight = "600";
-
-            unlockBtn.onclick = () => {
-
-  // 🔥 DIRECT LINK
-  window.open("https://omg10.com/4/10896143", "_blank");
-
-  // 🔥 POPUNDER
-  if (!window.adShown) {
-    window.adShown = true;
-
-    (function(s){
-    })
-    ([document.documentElement, document.body]
-    .filter(Boolean)
-    .pop()
-    .appendChild(document.createElement('script')));
-  }
-
-  // 🔥 UNLOCK
-  document.querySelectorAll(".story-media").forEach(el => {
-    el.style.filter = "blur(0px)";
-    el.style.transform = "scale(1)";
-    el.style.opacity = "1";
-  });
-
-  unlockBtn.remove();
-};
-
-            resultDiv.appendChild(unlockBtn);
-
-            data.stories.forEach(item => {
-
-              // 🔥 ANA FIX
-              const mediaUrl = item.url || item.link || "";
-
-              const card = document.createElement("div");
-              card.style.marginBottom = "20px";
-
-              let media;
-
-              if (item.type === "video") {
-                media = document.createElement("video");
-                media.src = mediaUrl;
-                media.controls = true;
-              } else {
-                media = document.createElement("img");
-                media.src = mediaUrl;
-              }
-
-              media.className = "story-media";
-              media.style.width = "100%";
-              media.style.borderRadius = "12px";
-              media.style.filter = "blur(15px)";
-              media.style.transform = "scale(1.05)";
-              media.style.opacity = "0.7";
-
-              const downloadBtn = document.createElement("a");
-              downloadBtn.innerText = "Download";
-              downloadBtn.href = mediaUrl;
-              downloadBtn.target = "_blank";
-
-              downloadBtn.style.display = "block";
-              downloadBtn.style.marginTop = "8px";
-              downloadBtn.style.padding = "10px";
-              downloadBtn.style.background = "#111";
-              downloadBtn.style.color = "#fff";
-              downloadBtn.style.borderRadius = "8px";
-              downloadBtn.style.textDecoration = "none";
-
-              card.appendChild(media);
-              card.appendChild(downloadBtn);
-
-              resultDiv.appendChild(card);
-            });
-
-          }, 300);
-
-        } catch (err) {
-          resultDiv.innerHTML = "Error loading stories.";
+        if (!username) {
+          e.preventDefault();
+          resultDiv.textContent = "Please enter a valid Instagram username.";
+          return;
         }
+
+        input.value = username;
       });
     </script>
 
@@ -409,20 +267,20 @@ function buildHomePage() {
         <article class="home-seo-card">
           <h3>Deutsch</h3>
           <p>
-            Für öffentliche Profile bietet StoryViewHub einen klaren Instagram Story Viewer, der direkt im Browser funktioniert.
-            Wer eine Story anonym ansehen möchte, kann den Nutzernamen eingeben und verfügbare Inhalte prüfen, ohne sich hier bei Instagram anzumelden.
-            Story Saver Insta hilft außerdem, öffentlich verfügbare Fotos oder Videos schneller zu öffnen.
+            FÃ¼r Ã¶ffentliche Profile bietet StoryViewHub einen klaren Instagram Story Viewer, der direkt im Browser funktioniert.
+            Wer eine Story anonym ansehen mÃ¶chte, kann den Nutzernamen eingeben und verfÃ¼gbare Inhalte prÃ¼fen, ohne sich hier bei Instagram anzumelden.
+            Story Saver Insta hilft auÃŸerdem, Ã¶ffentlich verfÃ¼gbare Fotos oder Videos schneller zu Ã¶ffnen.
             Wenn Medien bereitstehen, kann der Story Downloader sie in einem neuen Tab anzeigen, damit du sie bequem speichern kannst.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>Español</h3>
+          <h3>EspaÃ±ol</h3>
           <p>
-            Para Ver historias de Instagram desde una página limpia, StoryViewHub ofrece un Story Viewer pensado para perfiles públicos.
-            Solo escribe el nombre de usuario y revisa las stories disponibles sin iniciar sesión en esta página.
-            Story Saver resulta útil cuando quieres guardar una foto o un video público para consultarlo después.
-            Si el contenido está disponible, puedes Descargar Stories abriendo el enlace de descarga en una nueva pestaña.
+            Para Ver historias de Instagram desde una pÃ¡gina limpia, StoryViewHub ofrece un Story Viewer pensado para perfiles pÃºblicos.
+            Solo escribe el nombre de usuario y revisa las stories disponibles sin iniciar sesiÃ³n en esta pÃ¡gina.
+            Story Saver resulta Ãºtil cuando quieres guardar una foto o un video pÃºblico para consultarlo despuÃ©s.
+            Si el contenido estÃ¡ disponible, puedes Descargar Stories abriendo el enlace de descarga en una nueva pestaÃ±a.
           </p>
         </article>
 
@@ -431,28 +289,28 @@ function buildHomePage() {
           <p>
             Il Visualizzatore Storie Instagram di StoryViewHub aiuta a controllare le storie pubbliche con un flusso semplice e veloce.
             Inserisci il nome utente, attendi i risultati e guarda i contenuti disponibili senza effettuare il login su questa pagina.
-            Story Saver è pratico anche quando vuoi aprire foto o video pubblici in modo ordinato.
-            Quando il media è disponibile, puoi Scaricare Stories tramite il link dedicato.
+            Story Saver Ã¨ pratico anche quando vuoi aprire foto o video pubblici in modo ordinato.
+            Quando il media Ã¨ disponibile, puoi Scaricare Stories tramite il link dedicato.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>Français</h3>
+          <h3>FranÃ§ais</h3>
           <p>
             StoryViewHub propose une Visionneuse Story Instagram simple pour consulter les stories publiques depuis le navigateur.
-            Saisis un nom d'utilisateur public, attends les résultats, puis ouvre les contenus disponibles sans connexion Instagram sur cette page.
-            Story Saver peut aussi servir à conserver un accès rapide aux médias publics.
-            Quand une photo ou une vidéo est disponible, l'option Télécharger Story l'ouvre dans un nouvel onglet.
+            Saisis un nom d'utilisateur public, attends les rÃ©sultats, puis ouvre les contenus disponibles sans connexion Instagram sur cette page.
+            Story Saver peut aussi servir Ã  conserver un accÃ¨s rapide aux mÃ©dias publics.
+            Quand une photo ou une vidÃ©o est disponible, l'option TÃ©lÃ©charger Story l'ouvre dans un nouvel onglet.
           </p>
         </article>
 
         <article class="home-seo-card">
-          <h3>Português</h3>
+          <h3>PortuguÃªs</h3>
           <p>
-            O Visualizador de Stories do StoryViewHub foi criado para quem quer consultar stories públicos de forma simples, rápida e online.
-            Digite o nome de usuário público e veja os resultados disponíveis sem fazer login nesta página.
-            O Story Saver ajuda quando você precisa abrir uma foto ou um vídeo público com mais praticidade.
-            Se a mídia estiver disponível, use Baixar Stories pelo link exibido nos resultados.
+            O Visualizador de Stories do StoryViewHub foi criado para quem quer consultar stories pÃºblicos de forma simples, rÃ¡pida e online.
+            Digite o nome de usuÃ¡rio pÃºblico e veja os resultados disponÃ­veis sem fazer login nesta pÃ¡gina.
+            O Story Saver ajuda quando vocÃª precisa abrir uma foto ou um vÃ­deo pÃºblico com mais praticidade.
+            Se a mÃ­dia estiver disponÃ­vel, use Baixar Stories pelo link exibido nos resultados.
           </p>
         </article>
       </section>

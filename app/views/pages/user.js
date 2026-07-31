@@ -1,8 +1,12 @@
 const { renderLayout } = require("../layout");
 const { siteConfig } = require("../../config/site");
-const { escapeHtml } = require("../../utils/html");
+const {
+  escapeAttribute,
+  escapeHtml,
+  safeHttpUrl,
+  safeJsonForScript
+} = require("../../utils/html");
 
-// 🔥 UNIQUE TEXT GENERATOR
 function generateUniqueText(username) {
   const name = username.charAt(0).toUpperCase() + username.slice(1);
 
@@ -17,35 +21,51 @@ function generateUniqueText(username) {
   return variations[Math.floor(Math.random() * variations.length)];
 }
 
-function buildUserPage({ user, stories, relatedUsers }) {
+function buildProfileNotFoundPage({ pathname = "/user/not-found", relatedUsers = [] } = {}) {
+  const relatedLinks = relatedUsers
+    .map((user) => {
+      const href = `/user/${encodeURIComponent(user.slug)}`;
+      return `<a href="${escapeAttribute(href)}">@${escapeHtml(user.slug)}</a>`;
+    })
+    .join("");
 
-  if (!user) {
-    return renderLayout({
-      title: "User Not Found",
-      description: "This Instagram story page could not be found.",
-      pathname: "/user/not-found",
-      indexable: false,
-      body: `
-        <section class="page-section">
-          <div class="shell shell-narrow">
-            <div class="empty-state">
-              <h1>User not found</h1>
-              <p>Try another username below.</p>
-              <div class="link-list">
-                ${relatedUsers.map(u => `<a href="/user/${u.slug}">@${u.slug}</a>`).join("")}
-              </div>
-            </div>
+  return renderLayout({
+    title: "Profile Not Found",
+    description: "This Instagram profile page could not be found.",
+    pathname,
+    indexable: false,
+    includeCanonical: false,
+    includeSchema: false,
+    body: `
+      <section class="page-section">
+        <div class="shell shell-narrow">
+          <div class="empty-state">
+            <h1>Profile not found</h1>
+            <p>We could not find a verified public profile for this username.</p>
+            <a class="cta-button" href="/">Back to Story Saver</a>
+            ${relatedLinks ? `<div class="link-list" style="margin-top:20px;">${relatedLinks}</div>` : ""}
           </div>
-        </section>
-      `
-    });
+        </div>
+      </section>
+    `
+  });
+}
+
+function buildUserPage({ user, stories = [], relatedUsers = [] }) {
+  if (!user) {
+    return buildProfileNotFoundPage({ relatedUsers });
   }
 
-  const pathname = `/user/${user.slug}`;
+  const pathname = `/user/${encodeURIComponent(user.slug)}`;
   const title = `${user.displayName} Instagram Stories Download`;
   const description = `Watch ${user.displayName} Instagram stories instantly.`;
+  const safeDisplayName = escapeHtml(user.displayName);
+  const safeDisplayNameAttribute = escapeAttribute(user.displayName);
+  const safeSlug = escapeHtml(user.slug);
 
   const dynamicText = generateUniqueText(user.slug);
+  const dynamicTextHtml = escapeHtml(dynamicText);
+  const dynamicTextJson = safeJsonForScript(dynamicText);
   const randomUsers = Math.floor(Math.random() * 4000) + 1200;
 
   let storySection = "";
@@ -56,7 +76,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
         <h3 style="margin-bottom:10px;">No active stories</h3>
 
         <p style="color:#777; font-size:14px; max-width:500px; margin:0 auto;">
-          ${dynamicText}
+          ${dynamicTextHtml}
         </p>
 
         <p style="margin-top:10px; font-size:13px; color:#aaa;">
@@ -64,7 +84,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
         </p>
 
         <div style="margin-top:20px;">
-          <a href="${siteConfig.smmUrl}" target="_blank"
+          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
             style="
               display:inline-block;
               padding:14px 20px;
@@ -74,7 +94,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
               text-decoration:none;
               font-size:14px;
             ">
-            Boost profile activity 🚀
+            Boost profile activity
           </a>
         </div>
       </div>
@@ -97,17 +117,23 @@ function buildUserPage({ user, stories, relatedUsers }) {
       </div>
 
       <div class="story-grid">
-        ${stories.map((story, index) => `
+        ${stories.map((story, index) => {
+          const thumbnailUrl = safeHttpUrl(story.thumbnail);
+          const storyUrl = safeHttpUrl(story.url);
+
+          return `
           <article class="story-card">
 
             <div style="position:relative;">
-              <img 
-                src="${story.thumbnail}" 
-                class="story-media"
-                style="filter:blur(20px); width:100%; border-radius:12px;"
-                alt="${escapeHtml(user.displayName)} story ${index + 1}"
-                loading="lazy"
-              />
+              ${thumbnailUrl ? `
+                <img
+                  src="${escapeAttribute(thumbnailUrl)}"
+                  class="story-media"
+                  style="filter:blur(20px); width:100%; border-radius:12px;"
+                  alt="${safeDisplayNameAttribute} story ${index + 1}"
+                  loading="lazy"
+                />
+              ` : ""}
             </div>
 
             <div class="story-meta">
@@ -116,7 +142,7 @@ function buildUserPage({ user, stories, relatedUsers }) {
             </div>
 
             <div style="text-align:center; margin-top:10px;">
-              <a href="${story.url}" target="_blank"
+              ${storyUrl ? `<a href="${escapeAttribute(storyUrl)}" target="_blank"
                 style="
                   display:inline-block;
                   padding:10px 14px;
@@ -127,11 +153,12 @@ function buildUserPage({ user, stories, relatedUsers }) {
                   font-size:13px;
                 ">
                 Download
-              </a>
+              </a>` : ""}
             </div>
 
           </article>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
     `;
   }
@@ -141,20 +168,20 @@ function buildUserPage({ user, stories, relatedUsers }) {
       <div class="shell">
 
         <div class="page-intro">
-          <h1>${escapeHtml(user.displayName)} Stories</h1>
-          <p>@${escapeHtml(user.slug)} story viewer</p>
+          <h1>${safeDisplayName} Stories</h1>
+          <p>@${safeSlug} story viewer</p>
 
           <p style="margin-top:10px; color:#666; font-size:14px; max-width:500px;">
-            Watch ${escapeHtml(user.displayName)} Instagram stories anonymously.
+            Watch ${safeDisplayName} Instagram stories anonymously.
             No login required. Fast and updated regularly.
           </p>
 
           <div style="margin-top:20px;">
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-              
-              <input 
+
+              <input
                 id="usernameInput"
-                type="text" 
+                type="text"
                 placeholder="Enter another username..."
                 style="
                   padding:12px 14px;
@@ -188,20 +215,16 @@ function buildUserPage({ user, stories, relatedUsers }) {
 
         </div>
 
-        </div>
-
         <div id="storyContainer">
           ${storySection}
         </div>
 
         <div style="text-align:center; margin:20px 0; font-size:13px; color:#888;">
-          🔥 ${randomUsers}+ users boosted profiles today
-        </div>
-
+          ${randomUsers}+ users boosted profiles today
         </div>
 
         <section style="text-align:center; margin-top:30px;">
-          <a href="${siteConfig.smmUrl}" target="_blank"
+          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
             style="
               display:inline-block;
               width:90%;
@@ -214,18 +237,18 @@ function buildUserPage({ user, stories, relatedUsers }) {
               font-weight:600;
               font-size:16px;
             ">
-            Boost @${escapeHtml(user.slug)} to viral 🚀
+            Boost @${safeSlug} to viral
           </a>
 
           <div style="margin-top:8px; font-size:12px; color:#777;">
-            No login • Instant delivery
+            No login - Instant delivery
           </div>
         </section>
 
         <div style="text-align:center; margin-top:15px;">
-          <a href="${siteConfig.smmUrl}" target="_blank"
+          <a href="${escapeAttribute(siteConfig.smmUrl)}" target="_blank"
             style="font-size:13px; color:#555; text-decoration:underline;">
-            See how it works →
+            See how it works
           </a>
         </div>
 
@@ -233,95 +256,144 @@ function buildUserPage({ user, stories, relatedUsers }) {
     </section>
 
 <script>
+const emptyStoryText = ${dynamicTextJson};
+const usernamePattern = /^[a-z0-9._]{1,30}$/;
+
+function normalizeUsernameInput(value) {
+  const username = String(value || "").trim().replace(/^@+/, "").toLowerCase();
+  return usernamePattern.test(username) ? username : "";
+}
+
+function safeMediaUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "";
+    }
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function renderContainerMessage(message) {
+  const container = document.getElementById("storyContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.style.padding = "40px";
+  wrapper.style.textAlign = "center";
+  wrapper.textContent = message;
+  container.appendChild(wrapper);
+}
+
+function attachUnlockHandler() {
+  const unlockBtn = document.getElementById("unlockBtn");
+  if (!unlockBtn) return;
+
+  unlockBtn.onclick = () => {
+    document.querySelectorAll(".story-media")
+      .forEach(el => {
+        el.style.filter = "blur(0)";
+        el.style.transform = "scale(1)";
+        el.style.opacity = "1";
+      });
+  };
+}
 
 async function loadStories(username) {
-
+  const normalizedUsername = normalizeUsernameInput(username);
   const container = document.getElementById("storyContainer");
+  if (!container) return;
 
-  container.innerHTML = \`
-    <div style="padding:40px;text-align:center;">
-      <div style="
-        width:40px;
-        height:40px;
-        border:4px solid #eee;
-        border-top:4px solid #e25b34;
-        border-radius:50%;
-        animation:spin 1s linear infinite;
-        margin:auto;
-      "></div>
-      <p style="margin-top:10px;">Loading stories...</p>
-    </div>
-  \`;
+  if (!normalizedUsername) {
+    renderContainerMessage("Please enter a valid Instagram username.");
+    return;
+  }
+
+  container.innerHTML = '<div style="padding:40px;text-align:center;"><div style="width:40px;height:40px;border:4px solid #eee;border-top:4px solid #e25b34;border-radius:50%;animation:spin 1s linear infinite;margin:auto;"></div><p style="margin-top:10px;">Loading stories...</p></div>';
 
   try {
-    const res = await fetch("/api/story?username=" + username);
+    const res = await fetch("/api/story?username=" + encodeURIComponent(normalizedUsername));
     const data = await res.json();
 
     if (!data.stories || data.stories.length === 0) {
-      container.innerHTML = "${dynamicText}";
+      renderContainerMessage(emptyStoryText);
       return;
     }
 
-    container.innerHTML = \`
-      <div style="text-align:center; margin-bottom:20px;">
-        <button id="unlockBtn">Unlock Stories</button>
-      </div>
+    container.innerHTML = "";
 
-      <div class="story-grid">
-        \${data.stories.map(story => \`
-          <article class="story-card">
-            <img src="\${story.thumbnail}" class="story-media" style="filter:blur(20px)">
-            <a href="\${story.url}" target="_blank">Download</a>
-          </article>
-        \`).join("")}
-      </div>
-    \`;
+    const buttonWrap = document.createElement("div");
+    buttonWrap.style.textAlign = "center";
+    buttonWrap.style.marginBottom = "20px";
 
-    document.getElementById("unlockBtn").onclick = () => {
+    const unlockBtn = document.createElement("button");
+    unlockBtn.id = "unlockBtn";
+    unlockBtn.textContent = "Unlock Stories";
+    buttonWrap.appendChild(unlockBtn);
 
-  // 🔥 1. DIRECT LINK
-  const newTab = window.open("https://omg10.com/4/10896143", "_blank");
+    const grid = document.createElement("div");
+    grid.className = "story-grid";
 
-  if (!newTab) {
-    window.location.href = "https://omg10.com/4/10896143";
-  }
+    let renderedStories = 0;
 
-  // 🔥 2. POPUNDER
-  if (!window.adShown) {
-    window.adShown = true;
+    data.stories.forEach(story => {
+      const mediaUrl = safeMediaUrl(story && (story.url || story.link || ""));
+      const thumbnailUrl = safeMediaUrl(story && story.thumbnail) || mediaUrl;
 
-    (function(s){
-      s.dataset.zone='10893744',
-      s.src='https://al5sm.com/tag.min.js'
-    })
-    ([document.documentElement, document.body]
-    .filter(Boolean)
-    .pop()
-    .appendChild(document.createElement('script')));
-  }
+      if (!mediaUrl && !thumbnailUrl) {
+        return;
+      }
 
-  // 🔥 3. UNLOCK
-  document.querySelectorAll(".story-media")
-    .forEach(el => {
-      el.style.filter = "blur(0)";
-      el.style.transform = "scale(1)";
-      el.style.opacity = "1";
+      const card = document.createElement("article");
+      card.className = "story-card";
+
+      if (thumbnailUrl) {
+        const image = document.createElement("img");
+        image.src = thumbnailUrl;
+        image.className = "story-media";
+        image.style.filter = "blur(20px)";
+        card.appendChild(image);
+      }
+
+      if (mediaUrl) {
+        const download = document.createElement("a");
+        download.href = mediaUrl;
+        download.target = "_blank";
+        download.textContent = "Download";
+        card.appendChild(download);
+      }
+
+      grid.appendChild(card);
+      renderedStories++;
     });
 
-};
+    if (!renderedStories) {
+      renderContainerMessage("No stories found.");
+      return;
+    }
+
+    container.appendChild(buttonWrap);
+    container.appendChild(grid);
+    attachUnlockHandler();
 
   } catch {
-    container.innerHTML = "Error loading stories.";
+    renderContainerMessage("Error loading stories.");
   }
 }
 
 function goToUser() {
   const input = document.getElementById("usernameInput");
-  let username = input.value.trim();
+  const username = normalizeUsernameInput(input ? input.value : "");
 
-  if (!username) return;
+  if (!username) {
+    renderContainerMessage("Please enter a valid Instagram username.");
+    return;
+  }
 
-  username = username.replace(/^@+/, "").toLowerCase();
   loadStories(username);
 }
 
@@ -347,5 +419,6 @@ function formatRelativeDate(value) {
 }
 
 module.exports = {
+  buildProfileNotFoundPage,
   buildUserPage
 };

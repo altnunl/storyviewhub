@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { normalizeUsername } = require("../utils/username");
 
 const APIFY_URL = process.env.APIFY_URL || "";
 
@@ -8,8 +9,9 @@ const CACHE_TIME = 60 * 1000; // 60 saniye
 
 async function getStories(username) {
   try {
-    const cleanUsername = String(username || "").replace("@", "").trim();
-    if (!cleanUsername) return [];
+    const normalized = normalizeUsername(username);
+    if (!normalized.ok) return [];
+    const cleanUsername = normalized.username;
 
     if (!APIFY_URL) {
       console.log("❌ APIFY_URL missing in ENV");
