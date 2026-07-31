@@ -125,7 +125,7 @@ function renderLayout({
 
   ${buildMetaTags({ title, description, pathname, indexable, canonicalPathname, includeCanonical, includeSchema, robotsContent })}
   <link rel="preload" href="/static/styles.css" as="style">
-  <link rel="stylesheet" href="/static/styles.css?v=5">
+  <link rel="stylesheet" href="/static/styles.css?v=11">
 
   <style>
     @keyframes pulseGlow {

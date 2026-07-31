@@ -74,23 +74,28 @@ function buildHomePage({ visitorCount = 0 } = {}) {
         <input id="username" name="username" type="text" placeholder="@username" required>
         <button type="submit">View Stories</button>
       </form>
-      <p class="ad-disclosure" id="homeAdDisclosure">An advertising tab may open to support this free service.</p>
+      <p class="ad-disclosure home-ad-disclosure" id="homeAdDisclosure">An advertising tab may open to support this free service.</p>
 
-      <div id="visitorCount" style="
-        margin-top:10px;
-        font-size:13px;
-        color:#4b5563;
-        text-align:center;
-      ">
+      <a class="home-secondary-cta" href="/instagram/story-downloader/">Explore Instagram Tools</a>
+
+      <div id="visitorCount" class="home-visitor-count">
         ${renderedVisitorCount} people used this tool today
       </div>
 
-      <div id="result" style="margin-top:25px;transition:opacity 0.3s;"></div>
+      <div id="result" class="home-result"></div>
 
     </div>
 
   </div>
 </section>
+
+<button class="home-sticky-cta home-desktop-sticky-cta" id="homeDesktopStickyCta" type="button" aria-controls="storyForm" hidden>
+  View Instagram Stories
+</button>
+
+<button class="home-sticky-cta home-mobile-sticky-cta" id="homeMobileStickyCta" type="button" aria-controls="storyForm" hidden>
+  View Stories
+</button>
 
 
     <script>
@@ -159,6 +164,129 @@ function buildHomePage({ visitorCount = 0 } = {}) {
 
         input.value = username;
       });
+
+      function initHomeStickyCtas() {
+        const desktopCta = document.getElementById("homeDesktopStickyCta");
+        const mobileCta = document.getElementById("homeMobileStickyCta");
+        const usernameInput = document.getElementById("username");
+        const footer = document.querySelector(".site-footer");
+
+        if (!desktopCta || !mobileCta || !usernameInput || !("IntersectionObserver" in window)) {
+          return;
+        }
+
+        const mobileQuery = window.matchMedia("(max-width: 767px)");
+        let formVisible = true;
+        let footerVisible = false;
+
+        function bringStickyCtasForward() {
+          document.body.appendChild(desktopCta);
+          document.body.appendChild(mobileCta);
+        }
+
+        function keepStickyCtasForward() {
+          bringStickyCtasForward();
+          window.requestAnimationFrame(bringStickyCtasForward);
+          window.setTimeout(bringStickyCtasForward, 250);
+          window.setTimeout(bringStickyCtasForward, 750);
+        }
+
+        function updateStickyCtas() {
+          const shouldShow = !formVisible && !footerVisible;
+
+          if (shouldShow) {
+            keepStickyCtasForward();
+          }
+
+          desktopCta.hidden = !shouldShow || mobileQuery.matches;
+          mobileCta.hidden = !shouldShow || !mobileQuery.matches;
+        }
+
+        function focusStoryForm(event) {
+          event.preventDefault();
+
+          const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          form.scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "center"
+          });
+
+          window.setTimeout(() => {
+            usernameInput.focus({ preventScroll: true });
+          }, reduceMotion ? 0 : 350);
+        }
+
+        function eventIsInsideVisibleCta(event, cta) {
+          if (!cta || cta.hidden) {
+            return false;
+          }
+
+          const style = window.getComputedStyle(cta);
+
+          if (style.display === "none" || style.visibility === "hidden") {
+            return false;
+          }
+
+          const rect = cta.getBoundingClientRect();
+          return event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom;
+        }
+
+        function handleStickyCtaCapture(event) {
+          if (!eventIsInsideVisibleCta(event, desktopCta) && !eventIsInsideVisibleCta(event, mobileCta)) {
+            return;
+          }
+
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          focusStoryForm(event);
+        }
+
+        const visibilityObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.target === form) {
+              formVisible = entry.isIntersecting;
+            }
+
+            if (entry.target === footer) {
+              footerVisible = entry.isIntersecting;
+            }
+          });
+
+          updateStickyCtas();
+        }, {
+          root: null,
+          rootMargin: "0px 0px -10% 0px",
+          threshold: 0.12
+        });
+
+        visibilityObserver.observe(form);
+
+        if (footer) {
+          visibilityObserver.observe(footer);
+        }
+
+        desktopCta.addEventListener("click", focusStoryForm);
+        mobileCta.addEventListener("click", focusStoryForm);
+        document.addEventListener("click", handleStickyCtaCapture, true);
+
+        if (typeof mobileQuery.addEventListener === "function") {
+          mobileQuery.addEventListener("change", updateStickyCtas);
+        } else if (typeof mobileQuery.addListener === "function") {
+          mobileQuery.addListener(updateStickyCtas);
+        }
+
+        updateStickyCtas();
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initHomeStickyCtas, { once: true });
+      } else {
+        initHomeStickyCtas();
+      }
     </script>
 
 <section class="home-seo-section" aria-labelledby="homeSeoTitle">
