@@ -99,9 +99,23 @@ a {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--text);
   font-size: 1rem;
+  font-weight: 800;
   letter-spacing: 0.18em;
+  text-decoration: none;
   text-transform: uppercase;
+}
+
+.brand-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 8px;
 }
 
 .hero {
@@ -165,6 +179,56 @@ p {
   padding: 0 1.2rem;
   border-color: var(--line);
   background: #fffdfc;
+}
+
+.story-input-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.story-input-wrap input {
+  width: 100%;
+  padding-right: 3.4rem;
+}
+
+.story-form .story-clear-button {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.story-form .story-clear-button:hover,
+.story-form .story-clear-button:focus-visible {
+  background: #f3efed !important;
+  color: var(--text);
+}
+
+.story-form .story-clear-button[hidden] {
+  display: none;
+}
+
+.story-form button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.story-form-help {
+  margin: 0.65rem 0 0;
+  color: #59524f;
+  font-size: 0.9rem;
+  line-height: 1.45;
 }
 
 .story-form button,

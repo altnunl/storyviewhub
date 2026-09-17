@@ -4,11 +4,9 @@ const { platformPages } = require("../services/seoPageService");
 const { escapeAttribute, safeJsonForScript } = require("../utils/html");
 
 function renderHeaderBrand(pathname) {
-  if (pathname === "/") {
-    return `<span class="brand" aria-current="page">Story Saver</span>`;
-  }
+  const currentPage = pathname === "/" ? ` aria-current="page"` : "";
 
-  return `<a class="brand" href="/">Story Saver</a>`;
+  return `<a class="brand" href="/"${currentPage}><img class="brand-icon" src="/static/favicon-32x32.png?v=2" width="32" height="32" alt="" aria-hidden="true"><span>StoryViewHub</span></a>`;
 }
 
 function renderFooterPlatformLinks(pathname) {
@@ -116,16 +114,17 @@ function renderLayout({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="icon" href="/static/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/static/android-chrome-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/static/android-chrome-512x512.png">
+  <link rel="icon" href="/static/favicon.ico?v=2" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png?v=2">
+  <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon-96x96.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/android-chrome-192x192.png?v=2">
+  <link rel="icon" type="image/png" sizes="512x512" href="/static/android-chrome-512x512.png?v=2">
 
   ${buildMetaTags({ title, description, pathname, indexable, canonicalPathname, includeCanonical, includeSchema, robotsContent })}
   <link rel="preload" href="/static/styles.css" as="style">
-  <link rel="stylesheet" href="/static/styles.css?v=11">
+  <link rel="stylesheet" href="/static/styles.css?v=12">
 
   <style>
     @keyframes pulseGlow {
@@ -152,7 +151,7 @@ function renderLayout({
 
 <footer class="site-footer">
   <div class="shell footer-shell">
-    <p>Fast SSR pages built for search traffic and social growth funnels.</p>
+    <p>View public Instagram stories. No Instagram login required.</p>
     ${renderFooterPlatformLinks(pathname)}
   </div>
 </footer>

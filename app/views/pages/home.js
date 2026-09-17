@@ -70,10 +70,14 @@ function buildHomePage({ visitorCount = 0 } = {}) {
         Fast, clean and free Instagram story viewer
       </p>
 
-      <form id="storyForm" class="story-form" action="/result" method="GET" data-monetag-direct-link="true" data-monetag-validate="instagram-username" aria-describedby="homeAdDisclosure">
-        <input id="username" name="username" type="text" placeholder="@username" required>
-        <button type="submit">View Stories</button>
+      <form id="storyForm" class="story-form" action="/result" method="GET" data-monetag-direct-link="true" data-monetag-validate="instagram-username" aria-describedby="homeSearchHint homeAdDisclosure">
+        <div class="story-input-wrap">
+          <input id="username" name="username" type="text" placeholder="@username" required>
+          <button class="story-clear-button" id="clearUsername" type="button" aria-label="Clear username" hidden>&times;</button>
+        </div>
+        <button id="storySubmitButton" type="submit"><span id="storySubmitLabel">View Stories</span></button>
       </form>
+      <p class="story-form-help" id="homeSearchHint">Public accounts only · No Instagram login required</p>
       <p class="ad-disclosure home-ad-disclosure" id="homeAdDisclosure">An advertising tab may open to support this free service.</p>
 
       <a class="home-secondary-cta" href="/instagram/story-downloader/">Explore Instagram Tools</a>
@@ -101,7 +105,12 @@ function buildHomePage({ visitorCount = 0 } = {}) {
     <script>
       const form = document.getElementById("storyForm");
       const resultDiv = document.getElementById("result");
+      const usernameInput = document.getElementById("username");
+      const clearUsernameButton = document.getElementById("clearUsername");
+      const submitButton = document.getElementById("storySubmitButton");
+      const submitButtonLabel = document.getElementById("storySubmitLabel");
       const usernamePattern = /^[a-z0-9._]{1,30}$/;
+      let formIsSubmitting = false;
 
       function normalizeUsernameInput(value) {
         const username = String(value || "").trim().replace(/^@+/, "").toLowerCase();
@@ -152,9 +161,28 @@ function buildHomePage({ visitorCount = 0 } = {}) {
       \`;
       document.head.appendChild(style);
 
+      function updateClearButton() {
+        clearUsernameButton.hidden = usernameInput.value.length === 0;
+      }
+
+      function resetSubmissionState() {
+        formIsSubmitting = false;
+        submitButton.disabled = false;
+        submitButtonLabel.textContent = "View Stories";
+        updateClearButton();
+      }
+
+      usernameInput.addEventListener("input", updateClearButton);
+
+      clearUsernameButton.addEventListener("click", () => {
+        usernameInput.value = "";
+        resultDiv.textContent = "";
+        updateClearButton();
+        usernameInput.focus();
+      });
+
       form.addEventListener("submit", (e) => {
-        const input = document.getElementById("username");
-        const username = normalizeUsernameInput(input.value);
+        const username = normalizeUsernameInput(usernameInput.value);
 
         if (!username) {
           e.preventDefault();
@@ -162,8 +190,20 @@ function buildHomePage({ visitorCount = 0 } = {}) {
           return;
         }
 
-        input.value = username;
+        if (formIsSubmitting) {
+          e.preventDefault();
+          return;
+        }
+
+        usernameInput.value = username;
+        updateClearButton();
+        formIsSubmitting = true;
+        submitButton.disabled = true;
+        submitButtonLabel.textContent = "Loading…";
       });
+
+      window.addEventListener("pageshow", resetSubmissionState);
+      updateClearButton();
 
       function initHomeStickyCtas() {
         const desktopCta = document.getElementById("homeDesktopStickyCta");
